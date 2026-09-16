@@ -4,37 +4,60 @@ import '../styles/global.css';
 const site = Astro.site;
 const pagePath = '/';
 const canonical = site ? new URL(pagePath, site).href : undefined;
+const domain = 'ouzoudfalls.com';
 const ogImagePath = '/images/og-oujoud.svg';
 const ogImage = site ? new URL(ogImagePath, site).href : undefined;
 
 const attraction = {
   name: 'شلالات أوزود',
-  alternateName: 'Cascades d’Ouzoud',
+  fullName: 'شلالات أوزود',
+  shortName: 'أوزود',
+  alternateName: ['أوزود', "Cascades d'Ouzoud", 'Ouzoud Waterfalls'],
+  city: 'أوزود',
+  province: 'أزيلال',
+  region: 'بني ملال خنيفرة',
+  country: 'المغرب',
+  countryCode: 'MA',
+  postalCode: '22576',
   address: '277H+4VW Cascades Ouzoud, Ouzoud 22576, Morocco',
   latitude: 32.0152,
   longitude: -6.71933,
-  rating: 4.6
+  rating: 4.6,
+  reviewCount: 20029,
+  ratingSource: 'خرائط Google',
+  ratingSync: 'سبتمبر 2026',
+  mapsShareUrl: 'https://maps.app.goo.gl/cz7ABdpCUsSBKMXF6',
+  mapsEmbedSrc: 'https://www.google.com/maps?q=277H%2B4VW%20Cascades%20Ouzoud%2C%20Ouzoud%2022576%2C%20Morocco&output=embed&hl=ar',
+  nearbyLandmark1: 'إيمي نفري (الجسر الطبيعي)',
+  nearbyLandmark2: 'وادي أوزود والينابيع',
+  tourismUrl: 'https://www.visitmorocco.com/'
 };
 
 const faqs = [
+  ['أين تقع شلالات أوزود؟', 'تقع شلالات أوزود في قرية أوزود بإقليم أزيلال، ضمن جهة بني ملال خنيفرة في المغرب، على بُعد نحو 180 كم من مراكش.'],
   ['هل دخول شلالات أوزود مجاني؟', 'الوصول إلى الموقع الطبيعي نفسه مجاني عادةً، بينما تُدفع خدمات اختيارية مثل مواقف السيارات والقوارب والمرشدين والطعام بشكل منفصل.'],
   ['كم من الوقت أحتاج للزيارة؟', 'خصص ما بين 3 و5 ساعات للمشي والنزول إلى أسفل الشلال والتوقف عند نقاط المشاهدة وتناول وجبة بهدوء.'],
   ['ما أفضل وقت خلال اليوم؟', 'الصباح الباكر أهدأ عادةً، بينما قد تُظهر شمس الظهيرة أقواس قزح داخل رذاذ الشلال. تجنب الأحذية الملساء بعد المطر.'],
   ['هل يمكن الوصول بالسيارة؟', 'نعم، تصل الطرق إلى قرية أوزود ثم تكمل سيراً على الأقدام عبر المسارات المؤدية إلى نقاط المشاهدة وقاع الوادي.'],
-  ['هل توجد قرود في المنطقة؟', 'تُشاهد قرود المكاك البربري أحياناً في المنطقة. الأفضل عدم إطعامها أو الاقتراب منها بشكل يزعجها.']
+  ['هل توجد قرود في المنطقة؟', 'تُشاهد قرود المكاك البربري أحياناً في المنطقة. الأفضل عدم إطعامها أو الاقتراب منها بشكل يزعجها.'],
+  ['ما أهمية شلالات أوزود؟', 'تُعد شلالات أوزود من أشهر الوجهات الطبيعية في المغرب، وتتميز بارتفاع يقارب 110 م وبيئة وادٍ مغطاة بأشجار الزيتون حول ضفتي الوادي.']
 ];
 
 const touristJsonLd = {
   '@context': 'https://schema.org',
   '@type': ['TouristAttraction', 'LocalBusiness'],
-  name: attraction.name,
+  '@id': `${canonical || 'https://' + domain}/#attraction`,
+  name: attraction.fullName,
   alternateName: attraction.alternateName,
+  description: `دليل زيارة شامل لـ ${attraction.fullName} في ${attraction.city}، ${attraction.province}، ${attraction.country}.`,
   url: canonical,
-  image: ogImage,
+  image: ogImage ? [ogImage] : undefined,
+  isAccessibleForFree: true,
   address: {
     '@type': 'PostalAddress',
     streetAddress: '277H+4VW Cascades Ouzoud',
     addressLocality: 'Ouzoud',
+    addressRegion: 'Azilal',
     postalCode: '22576',
     addressCountry: 'MA'
   },
@@ -49,11 +72,8 @@ const touristJsonLd = {
     opens: '00:00',
     closes: '23:59'
   }],
-  aggregateRating: {
-    '@type': 'AggregateRating',
-    ratingValue: attraction.rating,
-    bestRating: 5
-  }
+  hasMap: attraction.mapsShareUrl,
+  sameAs: [attraction.mapsShareUrl, attraction.tourismUrl]
 };
 
 const faqJsonLd = {
@@ -68,15 +88,18 @@ const faqJsonLd = {
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width" />
-  <title>شلالات أوزود | دليل الزيارة والطريق والطعام</title>
-  <meta name="description" content="دليل عربي عملي لزيارة شلالات أوزود في إقليم أزيلال: أفضل وقت، الطريق، المواقف، التكاليف، الطعام، المشي ونقاط المشاهدة." />
-  {canonical && <link rel="canonical" href={canonical} />}
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>شلالات أوزود (أوزود، أزيلال) | دليل الزيارة والطريق والطعام</title>
+  <meta name="description" content={`دليل عربي شامل لزيارة ${attraction.fullName} في ${attraction.city} بإقليم ${attraction.province}، ${attraction.country}: أفضل وقت، الطريق، المواقف، التكاليف، الطعام، المشي ونقاط المشاهدة.`} />
+  <link rel="canonical" href={canonical} />
   <meta property="og:type" content="website" />
-  <meta property="og:title" content="شلالات أوزود | دليل الزيارة" />
-  <meta property="og:description" content="خطط لزيارة شلالات أوزود: المسار، الوقت، الطعام، المواقف والتكاليف العملية." />
-  {canonical && <meta property="og:url" content={canonical} />}
-  {ogImage && <meta property="og:image" content={ogImage} />}
+  <meta property="og:title" content="شلالات أوزود (أوزود) | دليل الزيارة" />
+  <meta property="og:description" content={`خطة لزيارة ${attraction.fullName} في ${attraction.city}، ${attraction.province}، ${attraction.country}: المسار، الوقت، الطعام، المواقف والتكاليف العملية.`} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:alt" content={`${attraction.fullName} في ${attraction.city}، ${attraction.country}`} />
+  <meta name="theme-color" content="#211916" />
+  <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" />
   <link rel="icon" href="/icons/favicon-16.png" sizes="16x16" />
@@ -90,43 +113,52 @@ const faqJsonLd = {
     gtag('js', new Date());
     gtag('config', 'G-HXM22WWPKP');
   </script>
+  <script is:inline>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
+    }
+  </script>
 </head>
 <body>
   <header class="fixed top-0 z-50 w-full border-b border-white/15 bg-[#211916]/70 backdrop-blur-xl">
     <div class="mx-auto flex max-w-7xl items-center justify-between px-5 py-3">
       <a href="#top" aria-label="الرئيسية"><img src="/logo.svg" alt="شعار شلالات أوزود" class="h-12 w-auto" /></a>
       <nav class="hidden gap-6 text-sm font-bold text-white md:flex">
-        <a href="#visit">الزيارة</a><a href="#transport">الوصول</a><a href="#food">الطعام</a><a href="#nearby">حول أوزود</a><a href="#faq">الأسئلة</a>
+        <a href="#about">عن أوزود</a><a href="#visit">الزيارة</a><a href="#transport">الوصول</a><a href="#food">الطعام</a><a href="#nearby">حول أوزود</a><a href="#reviews">التقييمات</a><a href="#faq">الأسئلة</a>
       </nav>
     </div>
   </header>
 
   <main id="top">
     <section class="relative min-h-[92vh] overflow-hidden bg-[#2d241f] text-white">
-      <img src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Ouzoud_Falls,_Morocco,_20250126_1133_7340.jpg?width=2200" alt="منظر حقيقي لشلالات أوزود والوادي الأحمر" class="absolute inset-0 h-full w-full object-cover opacity-75" />
+      <img src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Ouzoud_Falls,_Morocco,_20250126_1133_7340.jpg?width=2200" alt={`منظر حقيقي لـ ${attraction.fullName} والوادي الأحمر في ${attraction.city}، ${attraction.country}`} class="absolute inset-0 h-full w-full object-cover opacity-75" />
       <div class="absolute inset-0 bg-gradient-to-l from-[#251b17]/95 via-[#251b17]/45 to-transparent"></div>
       <div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#f3efe6] to-transparent"></div>
       <div class="relative mx-auto flex min-h-[92vh] max-w-7xl items-end px-5 pb-24 pt-32 md:items-center md:pb-12">
         <div class="max-w-3xl">
           <p class="kicker mb-5 text-[#f0c39e]">إقليم أزيلال · بني ملال خنيفرة</p>
-          <h1 class="text-5xl font-black leading-[1.05] md:text-8xl">شلالات<br/><span class="text-[#d9e8df]">أوزود</span></h1>
+          <h1 class="text-5xl font-black leading-[1.05] md:text-8xl">{attraction.name.split(' ')[0]}<br/><span class="text-[#d9e8df]">{attraction.name.split(' ')[1]}</span></h1>
           <p class="mt-6 max-w-2xl text-lg leading-8 text-white/85 md:text-xl">مياه تهبط عبر صخور حمراء ووادٍ مغطى بالزيتون؛ رحلة تتبدّل فيها المشاهد مع كل منعطف، من الحافة العليا إلى ضفة النهر.</p>
           <div class="mt-8 flex flex-wrap gap-3 text-sm font-bold">
             <span class="rounded-full bg-white/15 px-4 py-2 backdrop-blur">ارتفاع يقارب 110 م</span>
-            <span class="rounded-full bg-white/15 px-4 py-2 backdrop-blur">التقييم 4.6/5</span>
+            <span class="rounded-full bg-white/15 px-4 py-2 backdrop-blur">⭐ {attraction.rating}/5 · {attraction.reviewCount.toLocaleString('ar-EG')} تقييماً</span>
             <span class="rounded-full bg-white/15 px-4 py-2 backdrop-blur">الدخول للموقع الطبيعي مجاني</span>
           </div>
+          <p class="mt-3 text-xs text-white/55">التقييم وعدد التقييمات مُزامَنان من تقييمات مستخدمي خرائط Google (Google Maps) · {attraction.ratingSync} · <a href={attraction.mapsShareUrl} target="_blank" rel="noopener noreferrer" class="underline">اطّلع على جميع تقييمات خرائط Google ↗</a></p>
         </div>
       </div>
     </section>
 
-    <section id="visit" class="grain py-20 md:py-28">
+    <section id="about" class="grain py-20 md:py-28">
       <div class="mx-auto max-w-7xl px-5">
         <div class="grid gap-8 lg:grid-cols-[1.1fr_.9fr]">
           <div>
-            <p class="kicker text-[var(--clay)]">خطط الزيارة</p>
-            <h2 class="section-title mt-3">من الحافة إلى قلب الرذاذ</h2>
-            <p class="mt-6 max-w-2xl text-lg leading-9 text-stone-700">يبدأ معظم الزوار من أعلى الشلال ثم يتبعون المسار نحو الأسفل. الطريق يجمع بين سلالم وممرات ترابية ومقاطع بجوار الزيتون والمقاهي. ارتدِ حذاءً ثابتاً، وخذ ماءً، واترك وقتاً كافياً للتوقف عند نقاط التصوير.</p>
+            <p class="kicker text-[var(--clay)]">عن الوجهة</p>
+            <h2 class="section-title mt-3">حول {attraction.fullName}</h2>
+            <p class="mt-6 max-w-2xl text-lg leading-9 text-stone-700">أهلاً بك في <strong>{attraction.fullName}</strong>، المعروفة على نطاق واسع باسم <strong>{attraction.shortName}</strong>. تقع في قلب <strong>{attraction.city}</strong> بإقليم <strong>{attraction.province}</strong> في <strong>{attraction.country}</strong>، وتُعد وجهةً رئيسية للمسافرين إلى المنطقة.</p>
+            <p class="mt-4 text-sm font-bold tracking-wide text-stone-500">{attraction.fullName} ← {attraction.city} ← {attraction.province} ← {attraction.country}</p>
           </div>
           <div class="grid gap-4 sm:grid-cols-2">
             <div class="card p-6"><div class="text-3xl">⏱</div><h3 class="mt-4 font-black">المدة المقترحة</h3><p class="mt-2 text-stone-600">3–5 ساعات لزيارة مريحة تشمل النزول والعودة ووجبة.</p></div>
@@ -138,9 +170,9 @@ const faqJsonLd = {
       </div>
     </section>
 
-    <section class="bg-[#4d5b35] py-20 text-white md:py-28">
+    <section id="visit" class="bg-[#4d5b35] py-20 text-white md:py-28">
       <div class="mx-auto grid max-w-7xl gap-8 px-5 md:grid-cols-12">
-        <div class="md:col-span-7"><img src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Ouzoud_waterfalls_In_spring-Morocco.jpg?width=1800" alt="شلالات أوزود في الربيع" class="h-[520px] w-full rounded-[2rem] object-cover shadow-2xl" /></div>
+        <div class="md:col-span-7"><img src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Ouzoud_waterfalls_In_spring-Morocco.jpg?width=1800" alt={`${attraction.fullName} في الربيع قرب ${attraction.city}، ${attraction.country}`} class="h-[520px] w-full rounded-[2rem] object-cover shadow-2xl" /></div>
         <div class="flex flex-col justify-end md:col-span-5 md:pb-8">
           <p class="kicker text-[#dfe9d5]">الماء والواحة</p><h2 class="section-title mt-3">صخر أحمر، زيتون وماء أبيض</h2><p class="mt-6 text-lg leading-9 text-white/80">المشهد المميز هنا ليس الشلال وحده؛ اللون الطيني للجروف، النباتات على ضفتي الوادي، وصوت الماء يخلقون هوية بصرية مختلفة عن المدن المغربية.</p>
         </div>
@@ -149,14 +181,14 @@ const faqJsonLd = {
 
     <section id="transport" class="py-20 md:py-28">
       <div class="mx-auto max-w-7xl px-5">
-        <p class="kicker text-[var(--clay)]">التنقل</p><h2 class="section-title mt-3">الوصول والمواقف</h2>
+        <p class="kicker text-[var(--clay)]">التنقل</p><h2 class="section-title mt-3">الموقع والوصول إلى {attraction.shortName} في {attraction.city}</h2>
         <div class="mt-10 grid gap-5 md:grid-cols-3">
           <article class="card p-7"><h3 class="text-xl font-black">من مراكش</h3><p class="mt-3 leading-8 text-stone-600">المسافة البرية تقارب 180 كم. تستغرق الرحلة عادةً نحو 2.5–3.5 ساعات بحسب الطريق والتوقفات. تتوفر رحلات يومية منظمة، وسيارات خاصة، ونقل مشترك.</p></article>
           <article class="card p-7"><h3 class="text-xl font-black">بالسيارة</h3><p class="mt-3 leading-8 text-stone-600">استخدم اتجاه Ouzoud / Azilal ثم اتبع اللافتات إلى منطقة الشلالات. الطرق الأخيرة جبلية نسبياً، فخفف السرعة خصوصاً بعد الغروب أو المطر.</p></article>
           <article class="card p-7"><h3 class="text-xl font-black">مواقف السيارات</h3><p class="mt-3 leading-8 text-stone-600">توجد مواقف خاصة قرب مداخل المسارات. رسوم المواقف تختلف حسب الموقع والموسم؛ اسأل عن السعر قبل ترك السيارة واحتفظ بنقود مغربية صغيرة.</p></article>
         </div>
         <div class="mt-10 overflow-hidden rounded-[2rem] border border-stone-300 bg-white shadow-xl">
-          <iframe title="خريطة شلالات أوزود" src="https://www.google.com/maps?q=277H%2B4VW%20Cascades%20Ouzoud%2C%20Ouzoud%2022576%2C%20Morocco&output=embed&hl=ar" width="100%" height="520" style="border:0" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <iframe title="خريطة شلالات أوزود" src={attraction.mapsEmbedSrc} width="100%" height="520" style="border:0" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
       </div>
     </section>
@@ -174,10 +206,29 @@ const faqJsonLd = {
 
     <section id="nearby" class="py-20 md:py-28">
       <div class="mx-auto max-w-7xl px-5">
-        <p class="kicker text-[var(--clay)]">قريب من الشلال</p><h2 class="section-title mt-3">أماكن يمكن دمجها مع الزيارة</h2>
+        <p class="kicker text-[var(--clay)]">قريب من الشلال</p><h2 class="section-title mt-3">معالم وأماكن حول {attraction.shortName}</h2>
+        <p class="mt-6 max-w-3xl text-lg leading-9 text-stone-700">عند زيارة <strong>{attraction.fullName}</strong>، يمكن للزوّار استكشاف المعالم التاريخية ونقاط الاهتمام المحيطة بسهولة، بما في ذلك <strong>{attraction.nearbyLandmark1}</strong> و<strong>{attraction.nearbyLandmark2}</strong>.</p>
         <div class="mt-10 grid gap-6 lg:grid-cols-2">
           <div class="card p-7"><h3 class="text-2xl font-black">مسارات الوادي والينابيع</h3><p class="mt-3 leading-8 text-stone-600">بعد النقطة الرئيسية توجد ممرات أصغر ومشاهد للوادي والينابيع. اختر المسار وفق الوقت وحالة الأرض، ولا تدخل المقاطع الزلقة بعد المطر دون تجهيز مناسب.</p></div>
           <div class="card p-7"><h3 class="text-2xl font-black">إيمي نفري</h3><p class="mt-3 leading-8 text-stone-600">الجسر الطبيعي قرب دمنات محطة منطقية لمن يملك سيارة ويخطط ليوم أطول في المنطقة، ويمكن دمجه مع أوزود قبل العودة نحو مراكش.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="reviews" class="bg-[#f3efe6] py-20 md:py-28">
+      <div class="mx-auto max-w-7xl px-5">
+        <p class="kicker text-[var(--clay)]">التقييمات</p>
+        <h2 class="section-title mt-3">ماذا يقول زوّار {attraction.fullName}؟</h2>
+        <div class="mt-10 max-w-2xl card p-8">
+          <div class="flex items-center gap-5">
+            <div class="text-6xl font-black text-[var(--clay)] leading-none">{attraction.rating}</div>
+            <div>
+              <div class="text-2xl text-amber-500" aria-hidden="true">★★★★★</div>
+              <p class="mt-1 text-stone-600 text-sm">بناءً على {attraction.reviewCount.toLocaleString('ar-EG')} تقييماً</p>
+            </div>
+          </div>
+          <p class="mt-6 text-sm leading-7 text-stone-500">مُزامَنة من تقييمات مستخدمي خرائط Google، وقت المزامنة {attraction.ratingSync}؛ الحقوق تعود للكتّاب الأصليين وخرائط Google.</p>
+          <a href={attraction.mapsShareUrl} target="_blank" rel="noopener noreferrer" class="mt-5 inline-block rounded-full bg-[var(--clay)] px-5 py-2 text-sm font-bold text-white">عرض جميع التقييمات على خرائط Google ↗</a>
         </div>
       </div>
     </section>
@@ -201,9 +252,13 @@ const faqJsonLd = {
       </div>
     </section>
 
-    <section class="border-y border-stone-300 bg-white py-10">
+    <section class="border-y border-stone-300 bg-white py-12">
       <div class="mx-auto max-w-7xl px-5 text-sm leading-7 text-stone-600">
-        <strong class="text-stone-900">مصادر الصور:</strong> صور حقيقية لشلالات أوزود من Wikimedia Commons، منها أعمال Jakub Hałun وKasmii، وتُعرض وفق تراخيصها المفتوحة. المعلومات العملية جُمعت من Google Maps ومصادر سفر محلية وعامة؛ الأسعار والخدمات الاختيارية قد تتغير.
+        <h2 class="mb-4 text-lg font-black text-stone-900">مصادر ومراجع</h2>
+        <p class="mb-3"><strong class="text-stone-900">التقييمات · وقت المزامنة {attraction.ratingSync}:</strong> مُزامَنة من تقييمات مستخدمي خرائط Google، وقت المزامنة {attraction.ratingSync}؛ الحقوق تعود للكتّاب الأصليين وخرائط Google. <a href={attraction.mapsShareUrl} target="_blank" rel="noopener noreferrer" class="text-[var(--clay)] underline">عرض جميع التقييمات على خرائط Google ↗</a></p>
+        <p class="mb-3"><strong class="text-stone-900">مصادر الصور:</strong> صور حقيقية لشلالات أوزود من Wikimedia Commons، منها أعمال Jakub Hałun وKasmii، وتُعرض وفق تراخيصها المفتوحة.</p>
+        <p><strong class="text-stone-900">السياحة الرسمية:</strong> للاطلاع على التحديثات والنصائح الإقليمية، زُر <a href={attraction.tourismUrl} target="_blank" rel="noopener noreferrer" class="text-[var(--clay)] underline">البوابة السياحية الرسمية للمغرب (Visit Morocco) ↗</a>.</p>
+        <p class="mt-3 text-stone-500">المعلومات العملية جُمعت من خرائط Google ومصادر سفر محلية وعامة؛ الأسعار والخدمات الاختيارية قد تتغير.</p>
       </div>
     </section>
   </main>

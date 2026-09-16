@@ -1,0 +1,21 @@
+{
+  "name": "شلالات أوزود — دليل الزيارة",
+  "short_name": "أوزود",
+  "description": "دليل عربي عملي لزيارة شلالات أوزود في المغرب: الطريق، الوقت، المواقف، التكاليف، الطعام ونقاط المشاهدة.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f3efe6",
+  "theme_color": "#211916",
+  "lang": "ar",
+  "dir": "rtl",
+  "categories": ["travel", "tourism"],
+  "icons": [
+    { "src": "/icons/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icons/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" },
+    { "src": "/icons/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "/icons/favicon-32.png", "sizes": "32x32", "type": "image/png" },
+    { "src": "/icons/favicon-16.png", "sizes": "16x16", "type": "image/png" }
+  ]
+}

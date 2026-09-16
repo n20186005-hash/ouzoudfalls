@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // اكتب النطاق النهائي هنا فقط، مثل: https://your-domain.ma
 // اتركه فارغاً أثناء التطوير؛ البناء سيبقى صالحاً ولن يُنشأ sitemap دون نطاق.
-const SITE = '';
+const SITE = 'https://ouzoudfalls.com';
 
 export default defineConfig({
   site: SITE || undefined,
