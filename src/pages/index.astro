@@ -83,6 +83,23 @@ const faqJsonLd = {
     '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a }
   }))
 };
+
+// خادم: جلب الطقس وقت البناء (Server Component) وتخزينه في HTML؛
+// يُعاد تحديثه حياً في المتصفّح عند فتح الصفحة.
+let weatherInit = '';
+try {
+  const wres = await fetch(
+    `https://api.open-meteo.com/v1/forecast?latitude=${attraction.latitude}&longitude=${attraction.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,uv_index_max,wind_gusts_10m_max&timezone=auto&forecast_days=7`,
+    { headers: { 'User-Agent': 'ouzoudfalls-guide/1.0' } }
+  );
+  if (wres.ok) {
+    const wj = await wres.json();
+    weatherInit = JSON.stringify(wj);
+  }
+} catch (e) {
+  weatherInit = '';
+}
+
 ---
 <!doctype html>
 <html lang="ar" dir="rtl">
@@ -190,6 +207,24 @@ const faqJsonLd = {
         <div class="mt-10 overflow-hidden rounded-[2rem] border border-stone-300 bg-white shadow-xl">
           <iframe title="خريطة شلالات أوزود" src={attraction.mapsEmbedSrc} width="100%" height="520" style="border:0" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
+        <div class="mt-12 grid gap-5 md:grid-cols-2">
+          <div class="card p-7">
+            <h3 class="text-xl font-black">✈️ من مطار مراكش المنارة (RAK)</h3>
+            <p class="mt-3 leading-8 text-stone-600">تبعد أوزود نحو 180 كم عن المطار. الخيارات: استئجار سيارة (الأكثر مرونة)، أو سيارة خاصة/تاكسي متفاوض عليه (~2.5–3.5 ساعة)، أو رحلة يومية منظّمة. الطريق يمر عبر أزيلال ثم ينعطف نحو القرية.</p>
+          </div>
+          <div class="card p-7">
+            <h3 class="text-xl font-black">🚌 النقل العام</h3>
+            <p class="mt-3 leading-8 text-stone-600">حافلات بين المدن من مراكش إلى أزيلال أو بني ملال، ثم «تاكسي كبير» مشترك إلى أوزود. أوفر لكنه أطول وقتاً؛ تأكّد من مواعيد العودة مسبقاً.</p>
+          </div>
+          <div class="card p-7">
+            <h3 class="text-xl font-black">🚕 التاكسي</h3>
+            <p class="mt-3 leading-8 text-stone-600">التاكسيات الكبيرة من أزيلال/بني ملال تقلّ الزوّار إلى بداية المسار. اتفق على السعر قبل الانطلاق، ويفضّل المشاركة مع ركاب آخرين لتقليل التكلفة.</p>
+          </div>
+          <div class="card p-7">
+            <h3 class="text-xl font-black">🚗 القيادة الذاتية</h3>
+            <p class="mt-3 leading-8 text-stone-600">اتبّع اتجاه Ouzoud / Azilal. الطرق الأخيرة جبلية فخفّف السرعة، خصوصاً بعد الغروب أو المطر. مواقف المداخل مدفوعة.</p>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -237,9 +272,100 @@ const faqJsonLd = {
       <div class="mx-auto max-w-7xl px-5">
         <p class="kicker text-[var(--clay)]">الطقس الآن</p>
         <h2 class="section-title mt-3">الطقس وتوقّعات 7 أيام في {attraction.shortName}</h2>
-        <p class="mt-4 max-w-2xl text-sm leading-7 text-stone-500">توقّعات مباشرة من Open-Meteo لنقطة الشلال؛ تُحدَّث تلقائياً في متصفّحك. النصائح مبنية على حالة الطقس ولا تغني عن متابعة التنبيهات الرسمية.</p>
+        <p class="mt-4 max-w-2xl text-sm leading-7 text-stone-500">توقّعات الطقس لنقطة الشلال تُحدَّث تلقائياً عند فتح الصفحة. النصائح مبنية على حالة الطقس ولا تغني عن متابعة التنبيهات الرسمية.</p>
+        <script type="application/json" id="weather-init" set:html={weatherInit || 'null'}></script>
         <div id="weather-root" class="mt-10" data-lat={attraction.latitude} data-lon={attraction.longitude}>
           <div class="card p-8 text-stone-500">جارٍ تحميل الطقس…</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="history" class="bg-[#f3efe6] py-20 md:py-28">
+      <div class="mx-auto max-w-7xl px-5">
+        <p class="kicker text-[var(--clay)]">أصل المكان</p>
+        <h2 class="section-title mt-3">تاريخ وحكايات شلالات أوزود</h2>
+        <div class="mt-8 grid gap-8 lg:grid-cols-[1.2fr_.8fr]">
+          <div class="text-lg leading-9 text-stone-700 space-y-5">
+            <p>يُعدّ اسم «أوزود» مرتبطاً في اللغة الأمازيغية (البربرية) بالزيتون؛ فالوادي المُحيط بالشلالات تكسوه غابات الزيتون البرّي والتنوب، ما منح المكان اسمه وأعطاه طابعاً هادئاً مغايراً لضجيج المدن.</p>
+            <p>تسقط المياه من ارتفاع يقارب 110 أمتار عبر صخور جيرية حمراء تعود لعصور جيولوجية قديمة، لتصبّ في وادي العابد (وادي أوزود) وتشكّل واحدةً من أشهر وأعلى شلالات المغرب وشمال إفريقيا.</p>
+            <p>حوّلت القبائل الأمازيغية في منطقة أزيلال الوادي عبر القرون إلى أرض زراعية مدرّجة حيث الزيتون والحبوب، وسط تقاليد ضيافة مغربية أصيلة ما زالت حيّة في القرية حتى اليوم.</p>
+            <p class="text-stone-600">من الحكايات المحلية أن رذاذ الشلال يُطلق قوس قزح عند منتصف النهار في أيام الصيف الصافية، وأن المكان كان ولا يزال محطة استراحة باردة للقوافل والمسافرين قبل صعود الهضاب المجاورة.</p>
+          </div>
+          <div class="grid gap-4">
+            <div class="card p-6"><div class="text-3xl">🏞</div><h3 class="mt-3 font-black">ارتفاع يقارب 110 م</h3><p class="mt-2 text-stone-600">ثلاثة مستويات متتالية من السقوط تجعل المشهد متعدد الطبقات.</p></div>
+            <div class="card p-6"><div class="text-3xl">🌿</div><h3 class="mt-3 font-black">محمية طبيعية</h3><p class="mt-2 text-stone-600">الوادي موطن لقرود المكاك البربري وأشجار الزيتون البرّي والطيور.</p></div>
+            <div class="card p-6"><div class="text-3xl">🪨</div><h3 class="mt-3 font-black">صخور حمراء</h3><p class="mt-2 text-stone-600">الجروف الطينية الملوّنة جزء من هوية المكان البصرية.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="seasons" class="py-20 md:py-28">
+      <div class="mx-auto max-w-7xl px-5">
+        <p class="kicker text-[var(--clay)]">متى تزور</p>
+        <h2 class="section-title mt-3">استراتيجية الزيارة حسب الفصول</h2>
+        <p class="mt-6 max-w-3xl text-lg leading-9 text-stone-700">مناخ أوزود جبلي متوسطي: صيف حار وجاف نسبياً، شتاء بارد ورطب، وربيع يشهد ذروة جريان المياه بعد ذوبان ثلوج الأطلس. فيما يلي مقارنة مبسّطة تجمع الطقس والمياه والحياة البرية.</p>
+        <div class="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          <div class="card p-6"><h3 class="text-xl font-black text-[var(--clay)]">الربيع</h3><p class="text-sm font-bold text-stone-500">مارس – مايو</p><ul class="mt-3 space-y-2 text-sm leading-7 text-stone-600"><li>أقوى جريان للمياه بعد ذوبان الثلوج.</li><li>خضرة كثيفة وأزهار برّية.</li><li>حرارة لطيفة 15–25°م.</li><li>ازدحام معتدل في عطلة نهاية الأسبوع.</li></ul></div>
+          <div class="card p-6"><h3 class="text-xl font-black text-[var(--clay)]">الصيف</h3><p class="text-sm font-bold text-stone-500">يونيو – أغسطس</p><ul class="mt-3 space-y-2 text-sm leading-7 text-stone-600"><li>حرارة مرتفعة 30–38°م.</li><li>جريان أقل لكنه مستمر.</li><li>ذروة الزوّار؛ يُفضّل الصباح الباكر.</li><li>احتمال عواصف رعدية بعد الظهر.</li></ul></div>
+          <div class="card p-6"><h3 class="text-xl font-black text-[var(--clay)]">الخريف</h3><p class="text-sm font-bold text-stone-500">سبتمبر – نوفمبر</p><ul class="mt-3 space-y-2 text-sm leading-7 text-stone-600"><li>حرارة معتدلة ومريحة.</li><li>تعافي منسوب المياه تدريجياً.</li><li>إضاءة ممتازة للتصوير.</li><li>زحام أقل من الصيف.</li></ul></div>
+          <div class="card p-6"><h3 class="text-xl font-black text-[var(--clay)]">الشتاء</h3><p class="text-sm font-bold text-stone-500">ديسمبر – فبراير</p><ul class="mt-3 space-y-2 text-sm leading-7 text-stone-600"><li>أبرد أشهر وربما ضباب.</li><li>أقوى انسياب بعد الأمطار.</li><li>مسارات زلقة بحذر.</li><li>أقل الزوّار ازدحاماً.</li></ul></div>
+        </div>
+        <div class="mt-10 card p-8">
+          <h3 class="text-2xl font-black">تحليل شامل: الطقس والمياه والحياة البرية</h3>
+          <div class="mt-5 grid gap-6 md:grid-cols-3 text-stone-600 leading-8">
+            <div><h4 class="font-black text-stone-900">الطقس</h4><p class="mt-2 text-sm">مناخ جبلي متوسطي بفارق حراري كبير بين النهار والليل. الصيف حار والشتاء بارد ورطب؛ الأمطار تتركز شتاءً وربيعاً، وقد يصاحبها رعد محلي.</p></div>
+            <div><h4 class="font-black text-stone-900">نوعية المياه</h4><p class="mt-2 text-sm">الشلال يُغذّى من ينابيع وذوبان ثلوج الأطلس. المياه عذبة بطبيعتها لكنها تُصبح عكرة بعد الأمطار الغزيرة؛ يُنصح بالسباحة فقط في البرك الآمنة المحدّدة محلياً.</p></div>
+            <div><h4 class="font-black text-stone-900">الحياة البرية</h4><p class="mt-2 text-sm">يُشاهد المكاك البربري حول الوادي، إضافة إلى طيور جارحة وأنواع مرتبطة بغابات الزيتون. لا تُطعم القرود ولا تقترب منها؛ حافظ على مسافة آمنة.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="services" class="bg-[#f3efe6] py-20 md:py-28">
+      <div class="mx-auto max-w-7xl px-5">
+        <p class="kicker text-[var(--clay)]">خدمات الزوار</p>
+        <h2 class="section-title mt-3">المرافق المحيطة بالشلال</h2>
+        <p class="mt-6 max-w-3xl text-lg leading-9 text-stone-700">نورد أدناه أنواع المرافق المتوفّرة قرب أوزود بصفة عامة، دون ترشيح جهة بعينها، لتبقى المعلومة محايدة ومفيدة لكل زائر.</p>
+        <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="card p-7"><div class="text-3xl">🚻</div><h3 class="mt-3 font-black">دورات المياه</h3><p class="mt-2 text-stone-600 text-sm leading-7">متوفّرة قرب مداخل المسارات الرئيسية؛ قد تُطلب رسوم رمزية للصيانة.</p></div>
+          <div class="card p-7"><div class="text-3xl">🅿️</div><h3 class="mt-3 font-black">مواقف السيارات</h3><p class="mt-2 text-stone-600 text-sm leading-7">مواقف مدفوعة صغيرة قرب القرية؛ تمتلئ مبكّراً في عطلة نهاية الأسبوع.</p></div>
+          <div class="card p-7"><div class="text-3xl">🍽</div><h3 class="mt-3 font-black">مطاعم ومقاهٍ</h3><p class="mt-2 text-stone-600 text-sm leading-7">محال محلية تقدّم أطباقاً مغربية وأمازيغية (طاجين، شاي نعناع، عصير برتقال). اختر بحسب النظافة والسعر.</p></div>
+          <div class="card p-7"><div class="text-3xl">🛏</div><h3 class="mt-3 font-black">إقامة</h3><p class="mt-2 text-stone-600 text-sm leading-7">بيوت ضيافة وفنادق صغيرة في القرية وبلدة أزيلال؛ احجز مبكّراً في الصيف.</p></div>
+          <div class="card p-7"><div class="text-3xl">🛒</div><h3 class="mt-3 font-black">متاجر وتموين</h3><p class="mt-2 text-stone-600 text-sm leading-7">دكاكين صغيرة للهدايا التذكارية والمؤونة: ماء، وجبات خفيفة، زيت الزيتون المحلي والحرف اليدوية.</p></div>
+          <div class="card p-7"><div class="text-3xl">⛽</div><h3 class="mt-3 font-black">وقود وشحن</h3><p class="mt-2 text-stone-600 text-sm leading-7">محطات وقود في أزيلال وعلى الطرق الرئيسية؛ شحن السيارات الكهربائية نادر فخطّط له مسبقاً.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="itineraries" class="py-20 md:py-28">
+      <div class="mx-auto max-w-7xl px-5">
+        <p class="kicker text-[var(--clay)]">خطط زيارتك</p>
+        <h2 class="section-title mt-3">مسارات حسب نوع الزوّار</h2>
+        <div class="mt-10 grid gap-5 md:grid-cols-3">
+          <div class="card p-7"><h3 class="text-xl font-black">👨‍👩‍👧 عائلات مع أطفال</h3><ul class="mt-4 space-y-2 text-sm leading-7 text-stone-600"><li>ابدأ من الشرفة العلوية الآمنة للأطفال.</li><li>تجنّب النزول شديد الانحدار أو استخدم الدرج بحذر.</li><li>راقب القرود من بعيد دون إطعامها.</li><li>خصّص نزهة قصيرة قرب المطاعم.</li></ul></div>
+          <div class="card p-7"><h3 class="text-xl font-black">📷 مصوّرو الطبيعة</h3><ul class="mt-4 space-y-2 text-sm leading-7 text-stone-600"><li>الذروة: شروق وغروب الشمس عند الحافة العليا.</li><li>لقطة قوس القزح داخل الرذاذ عند منتصف النهار صيفاً.</li><li>المنصة السفلية لالتقاط الشلال كاملاً.</li><li>مدرّجات الزيتون خلفية رائعة.</li></ul></div>
+          <div class="card p-7"><h3 class="text-xl font-black">♿ حركة محدودة</h3><ul class="mt-4 space-y-2 text-sm leading-7 text-stone-600"><li>الشرفة العلوية قابلة للوصول بانحدار لطيف.</li><li>تجنّب درج النزول إلى القاعدة.</li><li>مقاعد راحة متوفّرة على المسار العلوي.</li><li>خطّط لزيارة قصيرة ومريحة.</li></ul></div>
+        </div>
+        <div class="mt-10 grid gap-5 md:grid-cols-2">
+          <div class="rounded-3xl border border-stone-300 bg-white p-7"><h3 class="text-2xl font-black">نصف يوم</h3><p class="mt-3 text-stone-600 leading-8">الوصول صباحاً → مشي خفيف عند الحافة العليا → صورة بانورامية → وجبة محلية هادئة → المغادرة قبل الظهيرة الحارة.</p></div>
+          <div class="rounded-3xl border border-stone-300 bg-white p-7"><h3 class="text-2xl font-black">يوم كامل</h3><p class="mt-3 text-stone-600 leading-8">نزول إلى القاعدة + جولة بالقارب الاختيارية → غداء → تمديد إلى الجسر الطبيعي (إيمي نفري) أو بلدة أزيلال إن توفّر الوقت.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="responsibility" class="bg-[#4d5b35] py-20 text-white md:py-28">
+      <div class="mx-auto max-w-7xl px-5">
+        <p class="kicker text-[#dfe9d5]">النفع العام</p>
+        <h2 class="section-title mt-3">سياحة مسؤولة وتوعية</h2>
+        <p class="mt-6 max-w-3xl text-lg leading-9 text-white/80">بصفتها موقعاً طبيعياً مشتركاً، تبقى أوزود جميلة بفضل زوّارها. هذه توجيهات بسيطة لزيارة آمنة لا تترك أثراً:</p>
+        <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="rounded-3xl border border-white/15 p-6"><h3 class="font-black">🌳 لا تطعم القرود</h3><p class="mt-2 text-sm text-white/70 leading-7">الإطعام يُفسد سلوك الحيوان ويقرّبها من الخطر؛ راقبها من بعيد.</p></div>
+          <div class="rounded-3xl border border-white/15 p-6"><h3 class="font-black">🥾 ابقَ على المسارات</h3><p class="mt-2 text-sm text-white/70 leading-7">لا تقترب من حافة الشلال أو المسارات الزلقة بعد المطر دون احتياطات.</p></div>
+          <div class="rounded-3xl border border-white/15 p-6"><h3 class="font-black">🚯 لا نفايات</h3><p class="mt-2 text-sm text-white/70 leading-7">أعد ما جلبته معك؛ لا تترك أكياساً أو عبوات في الوادي.</p></div>
+          <div class="rounded-3xl border border-white/15 p-6"><h3 class="font-black">💧 الأمان المائي</h3><p class="mt-2 text-sm text-white/70 leading-7">لا تسبح قرب الشلال مباشرة؛ استخدم المناطق الآمنة فقط عند توفّرها.</p></div>
+          <div class="rounded-3xl border border-white/15 p-6"><h3 class="font-black">🕌 احترم العادات</h3><p class="mt-2 text-sm text-white/70 leading-7">البس لباساً محتشماً عند المرور بالقرية؛ تصوّر باحترام للسكّان.</p></div>
+          <div class="rounded-3xl border border-white/15 p-6"><h3 class="font-black">🤝 دعم محلي</h3><p class="mt-2 text-sm text-white/70 leading-7">شراء منتجات محلية وحرف يدوية يساند المجتمع المحيط بالموقع.</p></div>
         </div>
       </div>
     </section>
@@ -367,11 +493,16 @@ const faqJsonLd = {
     function load(){
       var root=document.getElementById('weather-root');
       if(!root)return;
+      var initEl=document.getElementById('weather-init');
+      var init=null;
+      try{ init=initEl&&initEl.textContent?JSON.parse(initEl.textContent):null; }catch(e){ init=null; }
+      if(init&&init.current&&init.daily){ render(root,init); }
       var lat=root.getAttribute('data-lat'), lon=root.getAttribute('data-lon');
       var url='https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,uv_index_max,wind_gusts_10m_max&timezone=auto&forecast_days=7';
-      root.innerHTML='<div class="card p-8 text-stone-500">جارٍ تحميل الطقس…</div>';
-      fetch(url).then(function(r){return r.json();}).then(function(data){render(root,data);}).catch(function(){
-        root.innerHTML='<div class="card p-8 text-stone-600">تعذّر تحميل الطقس الآن. جرّب لاحقاً أو تحقّق من اتصالك بالإنترنت.</div>';
+      fetch(url).then(function(r){return r.json();}).then(function(data){
+        if(data&&data.current&&data.daily){ render(root,data); }
+      }).catch(function(){
+        if(!init||!init.current){ root.innerHTML='<div class="card p-8 text-stone-600">تعذّر تحميل الطقس الآن. جرّب لاحقاً أو تحقّق من اتصالك بالإنترنت.</div>'; }
       });
     }
     if(document.readyState!=='loading'){load();}else{document.addEventListener('DOMContentLoaded',load);}
