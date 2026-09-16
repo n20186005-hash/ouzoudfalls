@@ -126,7 +126,7 @@ const faqJsonLd = {
     <div class="mx-auto flex max-w-7xl items-center justify-between px-5 py-3">
       <a href="#top" aria-label="الرئيسية"><img src="/logo.svg" alt="شعار شلالات أوزود" class="h-12 w-auto" /></a>
       <nav class="hidden gap-6 text-sm font-bold text-white md:flex">
-        <a href="#about">عن أوزود</a><a href="#visit">الزيارة</a><a href="#transport">الوصول</a><a href="#food">الطعام</a><a href="#nearby">حول أوزود</a><a href="#reviews">التقييمات</a><a href="#faq">الأسئلة</a>
+        <a href="#about">عن أوزود</a><a href="#visit">الزيارة</a><a href="#transport">الوصول</a><a href="#food">الطعام</a><a href="#nearby">حول أوزود</a><a href="#reviews">التقييمات</a><a href="#weather">الطقس</a><a href="#faq">الأسئلة</a>
       </nav>
     </div>
   </header>
@@ -233,6 +233,17 @@ const faqJsonLd = {
       </div>
     </section>
 
+    <section id="weather" class="bg-[#eef3f1] py-20 md:py-28">
+      <div class="mx-auto max-w-7xl px-5">
+        <p class="kicker text-[var(--clay)]">الطقس الآن</p>
+        <h2 class="section-title mt-3">الطقس وتوقّعات 7 أيام في {attraction.shortName}</h2>
+        <p class="mt-4 max-w-2xl text-sm leading-7 text-stone-500">توقّعات مباشرة من Open-Meteo لنقطة الشلال؛ تُحدَّث تلقائياً في متصفّحك. النصائح مبنية على حالة الطقس ولا تغني عن متابعة التنبيهات الرسمية.</p>
+        <div id="weather-root" class="mt-10" data-lat={attraction.latitude} data-lon={attraction.longitude}>
+          <div class="card p-8 text-stone-500">جارٍ تحميل الطقس…</div>
+        </div>
+      </div>
+    </section>
+
     <section class="bg-[#dce8e4] py-20 md:py-28">
       <div class="mx-auto max-w-7xl px-5">
         <div class="grid gap-8 lg:grid-cols-3">
@@ -266,5 +277,105 @@ const faqJsonLd = {
   <footer class="bg-[#211916] py-10 text-center text-sm text-white/60">
     <p>هذا موقع إرشادي مستقل وغير رسمي، ولا يمثل إدارة شلالات أوزود أو أي جهة حكومية أو تجارية.</p>
   </footer>
+
+  <script is:inline>
+  (function(){
+    var WEATHER = {
+      0:{t:'صافٍ',i:'☀️'},1:{t:'صافٍ غالباً',i:'🌤️'},2:{t:'غائم جزئياً',i:'⛅'},3:{t:'غائم',i:'☁️'},
+      45:{t:'ضباب',i:'🌫️'},48:{t:'ضباب',i:'🌫️'},
+      51:{t:'رذاذ',i:'🌦️'},53:{t:'رذاذ',i:'🌦️'},55:{t:'رذاذ',i:'🌦️'},56:{t:'رذاذ متجمّد',i:'🌧️'},57:{t:'رذاذ متجمّد',i:'🌧️'},
+      61:{t:'مطر خفيف',i:'🌦️'},63:{t:'مطر متوسط',i:'🌧️'},65:{t:'مطر غزير',i:'🌧️'},
+      66:{t:'مطر متجمّد',i:'🌧️'},67:{t:'مطر متجمّد',i:'🌧️'},
+      71:{t:'ثلج',i:'❄️'},73:{t:'ثلج',i:'❄️'},75:{t:'ثلج',i:'❄️'},77:{t:'حبيبات ثلج',i:'🌨️'},
+      80:{t:'زخات مطر خفيفة',i:'🌦️'},81:{t:'زخات مطر',i:'🌧️'},82:{t:'زخات مطر غزيرة',i:'🌧️'},
+      85:{t:'زخات ثلج',i:'🌨️'},86:{t:'زخات ثلج',i:'🌨️'},
+      95:{t:'عاصفة رعدية',i:'⛈️'},96:{t:'عاصفة رعدية مع بَرَد',i:'⛈️'},99:{t:'عاصفة رعدية مع بَرَد',i:'⛈️'}
+    };
+    function beaufort(kmh){var t=[0,1,6,12,20,29,39,50,62,75,89,103],b=0;for(var i=1;i<t.length;i++){if(kmh>=t[i])b=i;}return b;}
+    function wInfo(c){return WEATHER[c]||{t:'غير معروف',i:'🌡️'};}
+    function buildAdvice(o){
+      var a={outfit:[],play:[],items:[],risks:[]};
+      var isLightRain=[51,53,55,56,57,61,80].indexOf(o.code)>=0;
+      var isModRain=[63,81].indexOf(o.code)>=0;
+      var isHeavyRain=[65,82].indexOf(o.code)>=0;
+      var isThunder=[95,96,99].indexOf(o.code)>=0;
+      var isClear=[0,1].indexOf(o.code)>=0;
+      var isCloudy=[2,3].indexOf(o.code)>=0;
+      var isFog=[45,48].indexOf(o.code)>=0;
+      var rain=isLightRain||isModRain||isHeavyRain||isThunder;
+      if(o.precip>=60){a.outfit.push('احتمال المطر مرتفع اليوم؛ يُفضّل اصطحاب مظلّة أو معطف مطر، وقدّم الزيارات الداخلية إن أمكن.');a.play.push('مع احتمال المطر القوي، أجّل النزول إلى الوادي وصعود المسارات المنحدرة.');a.items.push('مظلّة أو معطف مطر');}
+      if(isLightRain){a.outfit.push('أمطار خفيفة والأرض زلقة؛ تمشَّ بخطوات حذرة والتجارب المكشوفة أقل متعة.');a.items.push('مظلّة قابلة للطي');}
+      if(isModRain){a.risks.push('أمطار متوسطة: تجنّب أودية المياه والأحواض المنخفضة؛ القوارب قد تتوقف.');a.items.push('معطف مطر (تجنّب المظلّة الطويلة مع الرياح)');}
+      if(isHeavyRain){a.risks.push('أمطار غزيرة: لا تقترب من حافة الشلال أو مجاري المياه الجارية؛ الأنشطة النهرية متوقفة.');a.items.push('معطف مطر مقاوم');}
+      if(isThunder){a.risks.push('احذر الرعد والبرق: لا تصعد الجبل ولا تسبح ولا تقف تحت الأشجار عند المطر؛ الأنشطة المائية متوقفة غالباً.');}
+      if(rain){a.play.push('عند المطر يرتفع منسوب مياه الوادي بسرعة؛ لا تقترب من حافة الشلال أو مجاري المياه الجارية، ولا تسبح دون التأكد من الأمان.');}
+      if(o.tmax>=32){a.outfit.push('الحرارة مرتفعة؛ تجنّب الخروج وقت الظهيرة واختر ملابس خفيفة.');a.play.push('قصّر وقت المشي تحت الشمس واسترح في الظل.');a.items.push('واقٍ شمسي، ماء كافٍ، أدوات تبريد');}
+      if(o.uv>=5){a.outfit.push('الأشعة فوق البنفسجية قوية؛ احمِ بشرتك وعينيك.');a.items.push('كريم واقٍ، نظارة شمسية، قبعة');}
+      if((o.tmax-o.tmin)>8){a.outfit.push('فارق الحرارة بين النهار والليل كبير؛ احمل طبقة إضافية تلبسها وتخلعها بسهولة.');}
+      if(o.tmax<=10){a.outfit.push('الحرارة منخفضة؛ دفّئ جيداً وتجنّب البقاء طويلاً تحت الماء المتساقط.');a.items.push('معطف سميك، وشاح');}
+      if(o.bf>=5&&o.bf<=6){a.outfit.push('الرياح نشطة؛ القبعة قد تطير فتجنّب الثياب الواسعة.');a.play.push('رحلات البحر والأنشطة المكشوفة قد تتوقف مؤقتاً.');}
+      if(o.bf>=7){a.risks.push('رياح قوية: ابتعد عن اللوحات الإعلانية وصخور الوادي؛ الأنشطة النهرية متوقفة غالباً.');}
+      if(isClear){a.outfit.push('الطقس صافٍ ومناسب للتنزّه الخارجي.');a.play.push('وقت جيد لمشاهدة شروق أو غروب الشلال فوق الوادي.');a.items.push('لا تنسَ واقي الشمس');}
+      if(isCloudy){a.outfit.push('الضوء ناعم ومناسب جداً للتصوير، بلا حرارة حارقة.');a.play.push('مناسب للمشي الطويل حول الوادي والمدرّجات.');}
+      if(isFog){a.risks.push('الرؤية ضعيفة؛ المسارات الزلقة والجسور أصعب والرحلات قد تتأخر.');a.items.push('كن حذراً على الدرجات والحواف');}
+      return a;
+    }
+    function block(title,arr){
+      if(!arr.length)return '';
+      return '<div class="rounded-2xl border border-stone-200 bg-white/80 p-5"><h4 class="font-black text-stone-900 mb-2">'+title+'</h4><ul class="space-y-2 text-sm leading-7 text-stone-700">'+arr.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>';
+    }
+    function render(root,data){
+      var cur=data.current, d=data.daily;
+      var info=wInfo(cur.weather_code);
+      var tmax=Math.round(d.temperature_2m_max[0]), tmin=Math.round(d.temperature_2m_min[0]);
+      var precip=d.precipitation_probability_max[0], uv=d.uv_index_max[0];
+      var windKmh=cur.wind_speed_10m, bf=beaufort(windKmh);
+      var adv=buildAdvice({code:cur.weather_code,tmax:tmax,tmin:tmin,precip:precip,uv:uv,bf:bf});
+      var risks = adv.risks.length
+        ? '<div class="rounded-2xl border border-red-300 bg-red-50 p-5"><h4 class="font-black text-red-700 mb-2">⚠️ تنبيهات جوية</h4><ul class="space-y-2 text-sm leading-7 text-red-800">'+adv.risks.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>'
+        : '<div class="rounded-2xl border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-800">✅ لا توجد تنبيهات جوية خطيرة حالياً.</div>';
+      var wd=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+      var days='';
+      for(var i=0;i<d.time.length;i++){
+        var dt=new Date(d.time[i]+'T00:00');
+        var wname=i===0?'اليوم':wd[dt.getDay()];
+        var c=wInfo(d.weather_code[i]);
+        days+='<div class="flex-1 min-w-[112px] rounded-2xl border border-white/40 bg-white/70 p-4 text-center"><div class="text-sm font-bold text-stone-500">'+wname+'</div><div class="text-3xl my-2">'+c.i+'</div><div class="text-sm text-stone-700">'+c.t+'</div><div class="mt-2 font-black text-stone-900">'+Math.round(d.temperature_2m_max[i])+'° / '+Math.round(d.temperature_2m_min[i])+'°</div><div class="text-xs text-[#2f6f8f] mt-1">💧 '+d.precipitation_probability_max[i]+'%</div></div>';
+      }
+      root.innerHTML =
+        '<div class="grid gap-6 lg:grid-cols-3">'+
+          '<div class="lg:col-span-1 card p-7">'+
+            '<div class="flex items-center gap-4"><div class="text-6xl">'+info.i+'</div><div><div class="text-4xl font-black">'+Math.round(cur.temperature_2m)+'°</div><div class="text-stone-600">'+info.t+'</div></div></div>'+
+            '<div class="mt-5 grid grid-cols-2 gap-3 text-sm">'+
+              '<div class="rounded-xl bg-black/5 p-3"><div class="text-stone-500">العظمى / الصغرى</div><div class="font-black text-stone-900">'+tmax+'° / '+tmin+'°</div></div>'+
+              '<div class="rounded-xl bg-black/5 p-3"><div class="text-stone-500">احتمال المطر</div><div class="font-black text-stone-900">'+precip+'%</div></div>'+
+              '<div class="rounded-xl bg-black/5 p-3"><div class="text-stone-500">الرياح</div><div class="font-black text-stone-900">'+Math.round(windKmh)+' كم/س ('+bf+' بفورت)</div></div>'+
+              '<div class="rounded-xl bg-black/5 p-3"><div class="text-stone-500">الأشعة UV</div><div class="font-black text-stone-900">'+uv+'</div></div>'+
+            '</div>'+
+          '</div>'+
+          '<div class="lg:col-span-2 space-y-4">'+
+            risks+
+            '<div class="grid gap-4 sm:grid-cols-3">'+
+              block('👕 ملابس مقترحة',adv.outfit)+
+              block('🗺 ترتيب الزيارة',adv.play)+
+              block('🎒 أغراض تصطحبها',adv.items)+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="mt-8"><h3 class="mb-3 text-lg font-black text-stone-900">توقّعات 7 أيام</h3><div class="flex gap-3 overflow-x-auto pb-2">'+days+'</div></div>';
+    }
+    function load(){
+      var root=document.getElementById('weather-root');
+      if(!root)return;
+      var lat=root.getAttribute('data-lat'), lon=root.getAttribute('data-lon');
+      var url='https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,uv_index_max,wind_gusts_10m_max&timezone=auto&forecast_days=7';
+      root.innerHTML='<div class="card p-8 text-stone-500">جارٍ تحميل الطقس…</div>';
+      fetch(url).then(function(r){return r.json();}).then(function(data){render(root,data);}).catch(function(){
+        root.innerHTML='<div class="card p-8 text-stone-600">تعذّر تحميل الطقس الآن. جرّب لاحقاً أو تحقّق من اتصالك بالإنترنت.</div>';
+      });
+    }
+    if(document.readyState!=='loading'){load();}else{document.addEventListener('DOMContentLoaded',load);}
+  })();
+  </script>
 </body>
 </html>
