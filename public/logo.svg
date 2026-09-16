@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="72" viewBox="0 0 260 72" role="img" aria-label="شلالات أوزود">
+  <rect width="260" height="72" rx="18" fill="#f3efe6"/>
+  <g transform="translate(12 8)">
+    <path d="M8 8h40l-6 15-6-7-8 24-7-11-7 19H4L12 25l7 10 8-24 8 8 4-9H8z" fill="#8e3f28"/>
+    <path d="M21 42c8 7 17 8 25 1-2 9-8 14-14 14-6 0-11-5-11-15z" fill="#4d5b35"/>
+  </g>
+  <text x="78" y="31" font-family="Tahoma,Arial,sans-serif" font-size="21" font-weight="700" fill="#51261d">شلالات أوزود</text>
+  <text x="78" y="52" font-family="Tahoma,Arial,sans-serif" font-size="11" font-weight="700" fill="#4d5b35" letter-spacing="1.5">OUZOUD · AZILAL</text>
+</svg>
