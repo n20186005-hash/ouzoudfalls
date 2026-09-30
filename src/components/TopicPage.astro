@@ -1,0 +1,124 @@
+---
+import '../styles/global.css';
+import { site } from '../data/site';
+import { topics, topicSlugs } from '../content/topics';
+import { guides } from '../content/guide';
+import { locales, localeMeta, pagePath, topicHreflangAlternates, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  slug: string;
+}
+const { locale, slug } = Astro.props as Props;
+
+const topic = topics[slug][locale];
+const meta = localeMeta[locale];
+const brand = site.fullName[locale];
+
+const canonical = Astro.site ? new URL(pagePath(locale) + 'guide/' + slug + '/', Astro.site).href : undefined;
+const ogImage = Astro.site ? new URL(site.ogImagePath, Astro.site).href : undefined;
+const altLinks = topicHreflangAlternates(Astro.site, slug);
+
+const title = `${topic.h1} | ${brand}`;
+const backLink = pagePath(locale);
+const related = topicSlugs.filter((s) => s !== slug);
+const footerText = guides[locale].footer;
+
+const articleJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: topic.h1,
+  description: topic.desc,
+  inLanguage: meta.htmlLang,
+  mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+  image: ogImage ? [ogImage] : undefined
+};
+---
+
+<!doctype html>
+<html lang={meta.htmlLang} dir={meta.dir}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={topic.desc} />
+  <link rel="canonical" href={canonical} />
+  {altLinks.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={topic.desc} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:alt" content={`${topic.h1} — ${brand}`} />
+  <meta property="og:locale" content={meta.ogLocale} />
+  <meta name="theme-color" content="#211916" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" />
+  <link rel="icon" href="/icons/favicon-16.png" sizes="16x16" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180" />
+  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)}></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HXM22WWPKP"></script>
+  <script is:inline>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-HXM22WWPKP');
+  </script>
+</head>
+<body>
+  <header class="fixed top-0 z-50 w-full border-b border-white/15 bg-[#211916]/70 backdrop-blur-xl">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-5 py-3">
+      <a href={backLink} aria-label="الرئيسية"><img src="/logo.svg" alt="شعار شلالات أوزود" class="h-12 w-auto" /></a>
+      <div class="flex items-center gap-1">
+        {locales.map((l) => (
+          <a href={pagePath(l) + 'guide/' + slug + '/'} class={`rounded-full border px-3 py-1 text-xs font-bold ${l === locale ? 'border-white bg-white/20 text-white' : 'border-white/30 text-white hover:bg-white/10'}`}>
+            {localeMeta[l].label}
+          </a>
+        ))}
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="relative overflow-hidden bg-[#2d241f] text-white">
+      <div class="relative mx-auto max-w-4xl px-5 pb-16 pt-32">
+        <p class="kicker mb-4 text-[#f0c39e]">{topic.kicker}</p>
+        <h1 class="text-4xl font-black leading-tight md:text-6xl">{topic.h1}</h1>
+        <p class="mt-5 text-lg leading-8 text-white/85">{topic.desc}</p>
+        <a href={backLink} class="mt-7 inline-block rounded-full bg-white/15 px-5 py-2 text-sm font-bold backdrop-blur hover:bg-white/25">
+          {locale === 'ar' ? '← العودة إلى الدليل الكامل' : locale === 'fr' ? '← Retour au guide complet' : locale === 'zh' ? '← 返回完整指南' : '← Back to the full guide'}
+        </a>
+      </div>
+    </section>
+
+    <section class="py-16 md:py-20">
+      <div class="mx-auto max-w-3xl px-5">
+        <p class="mb-10 text-lg leading-9 text-stone-700">{topic.intro}</p>
+        <div class="space-y-8">
+          {topic.blocks.map((b) => (
+            <article class="card p-7">
+              <h2 class="text-2xl font-black text-[var(--clay)]">{b.h2}</h2>
+              <p class="mt-3 leading-8 text-stone-600">{b.body}</p>
+            </article>
+          ))}
+        </div>
+
+        <div class="mt-12 rounded-3xl border border-stone-300 bg-[#f3efe6] p-8">
+          <h2 class="text-xl font-black text-stone-900">{locale === 'ar' ? 'مواضيع ذات صلة' : locale === 'fr' ? 'Sujets connexes' : locale === 'zh' ? '相关专题' : 'Related topics'}</h2>
+          <ul class="mt-4 space-y-2 text-[var(--clay)] font-bold">
+            {related.map((s) => <li><a href={pagePath(locale) + 'guide/' + s + '/'} class="underline">{topics[s][locale].h1}</a></li>)}
+          </ul>
+          <a href={backLink} class="mt-6 inline-block rounded-full bg-[var(--clay)] px-5 py-2 text-sm font-bold text-white">
+            {locale === 'ar' ? 'الدليل الكامل لشلالات أوزود' : locale === 'fr' ? 'Guide complet des cascades d’Ouzoud' : locale === 'zh' ? '橄榄树瀑布完整指南' : 'Full Ouzoud Waterfalls guide'}
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-[#211916] py-10 text-center text-sm text-white/60">
+    <p>{footerText}</p>
+  </footer>
+</body>
+</html>

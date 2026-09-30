@@ -1,0 +1,534 @@
+---
+import '../styles/global.css';
+import { site, mapsEmbedSrc } from '../data/site';
+import { guides } from '../content/guide';
+import { locales, localeMeta, hreflangAlternates, pagePath, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props as Props;
+
+const g = guides[locale];
+const meta = localeMeta[locale];
+
+const canonical = Astro.site ? new URL(locale === 'ar' ? '/' : '/en/', Astro.site).href : undefined;
+const ogImage = Astro.site ? new URL(site.ogImagePath, Astro.site).href : undefined;
+
+// كيان واحد عبر اللغتين
+const origin = Astro.site ? new URL('/', Astro.site).href.replace(/\/$/, '') : 'https://' + site.domain;
+const entityId = origin + '/#attraction';
+
+const name = site.fullName[locale];
+const short = site.shortName[locale];
+const city = site.city[locale];
+const province = site.province[locale];
+const country = site.country[locale];
+const lm1 = site.nearbyLandmark1[locale];
+const lm2 = site.nearbyLandmark2[locale];
+const sync = site.ratingSync[locale];
+const numFmt = locale === 'ar' ? 'ar-EG' : locale === 'fr' ? 'fr-FR' : locale === 'zh' ? 'zh-CN' : 'en-US';
+const reviewCountStr = site.reviewCount.toLocaleString(numFmt);
+
+function ph(s: string, map: Record<string, string>): string {
+  return Object.entries(map).reduce((acc, [k, v]) => acc.split('{' + k + '}').join(v), s);
+}
+
+const metaTitle =
+  locale === 'ar'
+    ? 'شلالات أوزود (Ouzoud Waterfalls) | دليل الزيارة من مراكش: الطريق والموسم والتكاليف'
+    : 'Ouzoud Waterfalls (شلالات أوزود) | Visitor guide from Marrakech: route, season & costs';
+const metaDescription =
+  locale === 'ar'
+    ? 'دليل زيارة شامل لشلالات أوزود (Ouzoud Waterfalls) في المغرب: الطريق من مراكش، منبع الشلال، أفضل وقت للزيارة، التكاليف، المواقف، الطعام ونقاط المشاهدة.'
+    : 'A complete visitor guide to Ouzoud Waterfalls in Morocco: route from Marrakech, the falls’ source, best time to visit, costs, parking, food and viewpoints.';
+const ogTitle =
+  locale === 'ar'
+    ? 'شلالات أوزود (Ouzoud Waterfalls) | دليل الزيارة'
+    : 'Ouzoud Waterfalls (شلالات أوزود) | Visitor guide';
+const ogDescription =
+  locale === 'ar'
+    ? 'خطة لزيارة شلالات أوزود (Ouzoud Waterfalls) في ' + city + '، ' + province + '، ' + country + ': الطريق من مراكش، الوقت، منبع الشلال، الطعام، المواقف والتكاليف العملية.'
+    : 'Plan your visit to Ouzoud Waterfalls in ' + city + ', ' + province + ', ' + country + ': route from Marrakech, timing, the falls’ source, food, parking and practical costs.';
+
+const aboutP1 = ph(g.about.p1, { name, short, city, province, country });
+const transportH2 = ph(g.transport.h2, { short, city });
+const nearbyP = ph(g.nearby.p, { name, lm1, lm2 });
+const nearbyH2 = ph(g.nearby.h2, { short });
+const reviewsH2 = ph(g.reviews.h2, { name });
+const weatherH2 = ph(g.weather.h2, { short });
+const aboutH2 = ph(g.about.h2, { name });
+const hierarchy = ph(g.about.hierarchy, { name, city, province, country });
+const heroRatingNote = ph(g.hero.ratingNote, { sync });
+const reviewsBasedOn = ph(g.reviews.basedOn, { n: reviewCountStr });
+const reviewsSyncNote = ph(g.reviews.syncNote, { sync });
+const sourcesParas = g.sources.paragraphs.map((p) =>
+  ph(p, { sync, maps: site.mapsShareUrl, tourism: site.tourismUrl })
+);
+
+const touristJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': ['TouristAttraction', 'LocalBusiness'],
+  '@id': entityId,
+  name,
+  alternateName: site.alternateName,
+  description:
+    locale === 'ar'
+      ? `دليل زيارة شامل لـ ${name} في ${city}، ${province}، ${country}.`
+      : `A complete visitor guide to ${name} in ${city}, ${province}, ${country}.`,
+  url: canonical,
+  image: ogImage ? [ogImage] : undefined,
+  isAccessibleForFree: true,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: site.streetAddress,
+    addressLocality: site.addressLocality,
+    addressRegion: site.addressRegion,
+    postalCode: site.postalCode,
+    addressCountry: site.countryCode
+  },
+  geo: {
+    '@type': 'GeoCoordinates',
+    latitude: site.latitude,
+    longitude: site.longitude
+  },
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      opens: '00:00',
+      closes: '23:59'
+    }
+  ],
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: String(site.rating),
+    reviewCount: String(site.reviewCount)
+  },
+  hasMap: site.mapsShareUrl,
+  sameAs: [site.mapsShareUrl, site.tourismUrl]
+};
+
+const faqJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: g.faq.items.map(([q, a]) => ({
+    '@type': 'Question',
+    name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a }
+  }))
+};
+
+// خادم: جلب الطقس وقت البناء (Server Component) وتخزينه في HTML؛
+// يُعاد تحديثه حياً في المتصفّح عند فتح الصفحة.
+let weatherInit = '';
+try {
+  const wres = await fetch(
+    `https://api.open-meteo.com/v1/forecast?latitude=${site.latitude}&longitude=${site.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,uv_index_max,wind_gusts_10m_max&timezone=auto&forecast_days=7`,
+    { headers: { 'User-Agent': 'ouzoudfalls-guide/1.0' } }
+  );
+  if (wres.ok) {
+    const wj = await wres.json();
+    weatherInit = JSON.stringify(wj);
+  }
+} catch (e) {
+  weatherInit = '';
+}
+
+const altLinks = hreflangAlternates(Astro.site);
+const weatherI18nJson = JSON.stringify(g.weatherI18n);
+---
+
+<!doctype html>
+<html lang={meta.htmlLang} dir={meta.dir}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{metaTitle}</title>
+  <meta name="description" content={metaDescription} />
+  <link rel="canonical" href={canonical} />
+  {altLinks.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={ogTitle} />
+  <meta property="og:description" content={ogDescription} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:alt" content={`${name} — ${city}, ${country}`} />
+  <meta property="og:locale" content={meta.ogLocale} />
+  <meta name="theme-color" content="#211916" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" />
+  <link rel="icon" href="/icons/favicon-16.png" sizes="16x16" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180" />
+  <script type="application/ld+json" set:html={JSON.stringify(touristJsonLd)}></script>
+  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)}></script>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HXM22WWPKP"></script>
+  <script is:inline>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-HXM22WWPKP');
+  </script>
+  <script is:inline>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
+    }
+  </script>
+</head>
+<body>
+  <header class="fixed top-0 z-50 w-full border-b border-white/15 bg-[#211916]/70 backdrop-blur-xl">
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-5 py-3">
+      <a href="#top" aria-label="الرئيسية"><img src="/logo.svg" alt="شعار شلالات أوزود" class="h-12 w-auto" /></a>
+      <nav class="hidden gap-6 text-sm font-bold text-white md:flex">
+        {g.nav.map((n) => <a href={n.href}>{n.label}</a>)}
+      </nav>
+      <div class="flex items-center gap-1">
+        {locales.map((l) => (
+          <a href={pagePath(l)} class={`rounded-full border px-3 py-1 text-xs font-bold ${l === locale ? 'border-white bg-white/20 text-white' : 'border-white/30 text-white hover:bg-white/10'}`}>
+            {localeMeta[l].label}
+          </a>
+        ))}
+      </div>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="relative min-h-[92vh] overflow-hidden bg-[#2d241f] text-white">
+      <img src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Ouzoud_Falls,_Morocco,_20250126_1133_7340.jpg?width=2200" alt={`${name} — ${city}, ${country}`} class="absolute inset-0 h-full w-full object-cover opacity-75" />
+      <div class="absolute inset-0 bg-gradient-to-l from-[#251b17]/95 via-[#251b17]/45 to-transparent"></div>
+      <div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#f3efe6] to-transparent"></div>
+      <div class="relative mx-auto flex min-h-[92vh] max-w-7xl items-end px-5 pb-24 pt-32 md:items-center md:pb-12">
+        <div class="max-w-3xl">
+          <p class="kicker mb-5 text-[#f0c39e]">{g.hero.kicker}</p>
+          <h1 class="text-5xl font-black leading-[1.05] md:text-8xl">{g.hero.title[0]}<br/><span class="text-[#d9e8df]">{g.hero.title[1]}</span></h1>
+          <p class="mt-6 max-w-2xl text-lg leading-8 text-white/85 md:text-xl">{g.hero.desc}</p>
+          <div class="mt-8 flex flex-wrap gap-3 text-sm font-bold">
+            <span class="rounded-full bg-white/15 px-4 py-2 backdrop-blur">{g.hero.badgeHeight}</span>
+            <span class="rounded-full bg-white/15 px-4 py-2 backdrop-blur">⭐ {site.rating}/5 · {reviewCountStr}</span>
+            <span class="rounded-full bg-white/15 px-4 py-2 backdrop-blur">{g.hero.badgeFree}</span>
+          </div>
+          <p class="mt-3 text-xs text-white/55" set:html={heroRatingNote.replace('↗', '')}></p>
+          <p class="mt-3 text-xs text-white/55"><a href={site.mapsShareUrl} target="_blank" rel="noopener noreferrer" class="underline">{g.reviews.button}</a></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="grain py-20 md:py-28">
+      <div class="mx-auto max-w-7xl px-5">
+        <div class="grid gap-8 lg:grid-cols-[1.1fr_.9fr]">
+          <div>
+            <p class="kicker text-[var(--clay)]">{g.about.kicker}</p>
+            <h2 class="section-title mt-3" set:html={aboutH2}></h2>
+            <p class="mt-6 max-w-2xl text-lg leading-9 text-stone-700" set:html={aboutP1}></p>
+            <p class="mt-4 text-sm font-bold tracking-wide text-stone-500">{hierarchy}</p>
+          </div>
+          <div class="grid gap-4 sm:grid-cols-2">
+            {g.about.cards.map((c) => (
+              <div class="card p-6"><div class="text-3xl">{c.icon}</div><h3 class="mt-4 font-black">{c.title}</h3><p class="mt-2 text-stone-600">{c.text}</p></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="visit" class="bg-[#4d5b35] py-20 text-white md:py-28">
+      <div class="mx-auto grid max-w-7xl gap-8 px-5 md:grid-cols-12">
+        <div class="md:col-span-7"><img src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Ouzoud_waterfalls_In_spring-Morocco.jpg?width=1800" alt={`${name} — ${city}, ${country}`} class="h-[520px] w-full rounded-[2rem] object-cover shadow-2xl" /></div>
+        <div class="flex flex-col justify-end md:col-span-5 md:pb-8">
+          <p class="kicker text-[#dfe9d5]">{g.visit.kicker}</p><h2 class="section-title mt-3" set:html={g.visit.h2}></h2><p class="mt-6 text-lg leading-9 text-white/80" set:html={g.visit.p}></p>
+        </div>
+      </div>
+    </section>
+
+    <section id="transport" class="py-20 md:py-28">
+      <div class="mx-auto max-w-7xl px-5">
+        <p class="kicker text-[var(--clay)]">{g.transport.kicker}</p><h2 class="section-title mt-3" set:html={transportH2}></h2>
+        <div class="mt-10 grid gap-5 md:grid-cols-3">
+          {g.transport.cards.map((c) => (
+            <article class="card p-7"><h3 class="text-xl font-black">{c.title}</h3><p class="mt-3 leading-8 text-stone-600">{c.text}</p></article>
+          ))}
+        </div>
+        <div class="mt-10 overflow-hidden rounded-[2rem] border border-stone-300 bg-white shadow-xl">
+          <iframe title={g.transport.mapTitle} src={mapsEmbedSrc(locale)} width="100%" height="520" style="border:0" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+        <div class="mt-12 grid gap-5 md:grid-cols-2">
+          {g.transport.cards2.map((c) => (
+            <div class="card p-7"><h3 class="text-xl font-black">{c.title}</h3><p class="mt-3 leading-8 text-stone-600">{c.text}</p></div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="food" class="bg-[#51261d] py-20 text-white md:py-28">
+      <div class="mx-auto max-w-7xl px-5">
+        <p class="kicker text-[#efc4aa]">{g.food.kicker}</p><h2 class="section-title mt-3" set:html={g.food.h2}></h2>
+        <div class="mt-10 grid gap-5 md:grid-cols-3">
+          {g.food.restaurants.map((r) => (
+            <div class="rounded-3xl border border-white/15 p-7"><h3 class="text-xl font-black">{r.title}</h3><p class="mt-3 leading-8 text-white/70">{r.text}</p></div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="nearby" class="py-20 md:py-28">
+      <div class="mx-auto max-w-7xl px-5">
+        <p class="kicker text-[var(--clay)]">{g.nearby.kicker}</p><h2 class="section-title mt-3" set:html={nearbyH2}></h2>
+        <p class="mt-6 max-w-3xl text-lg leading-9 text-stone-700" set:html={nearbyP}></p>
+        <div class="mt-10 grid gap-6 lg:grid-cols-2">
+          {g.nearby.cards.map((c) => (
+            <div class="card p-7"><h3 class="text-2xl font-black">{c.title}</h3><p class="mt-3 leading-8 text-stone-600">{c.text}</p></div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="reviews" class="bg-[#f3efe6] py-20 md:py-28">
+      <div class="mx-auto max-w-7xl px-5">
+        <p class="kicker text-[var(--clay)]">{g.reviews.kicker}</p>
+        <h2 class="section-title mt-3" set:html={reviewsH2}></h2>
+        <div class="mt-10 max-w-2xl card p-8">
+          <div class="flex items-center gap-5">
+            <div class="text-6xl font-black text-[var(--clay)] leading-none">{site.rating}</div>
+            <div>
+              <div class="text-2xl text-amber-500" aria-hidden="true">★★★★★</div>
+              <p class="mt-1 text-stone-600 text-sm" set:html={reviewsBasedOn}></p>
+            </div>
+          </div>
+          <p class="mt-6 text-sm leading-7 text-stone-500" set:html={reviewsSyncNote}></p>
+          <a href={site.mapsShareUrl} target="_blank" rel="noopener noreferrer" class="mt-5 inline-block rounded-full bg-[var(--clay)] px-5 py-2 text-sm font-bold text-white">{g.reviews.button}</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="weather" class="bg-[#eef3f1] py-20 md:py-28">
+      <div class="mx-auto max-w-7xl px-5">
+        <p class="kicker text-[var(--clay)]">{g.weather.kicker}</p>
+        <h2 class="section-title mt-3" set:html={weatherH2}></h2>
+        <p class="mt-4 max-w-2xl text-sm leading-7 text-stone-500" set:html={g.weather.note}></p>
+        <script type="application/json" id="weather-init" set:html={weatherInit || 'null'}></script>
+        <script type="application/json" id="weather-i18n" set:html={weatherI18nJson}></script>
+        <div id="weather-root" class="mt-10" data-lat={site.latitude} data-lon={site.longitude} data-locale={locale}>
+          <div class="card p-8 text-stone-500">{g.weatherI18n.labels.loading}</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="history" class="bg-[#f3efe6] py-20 md:py-28">
+      <div class="mx-auto max-w-7xl px-5">
+        <p class="kicker text-[var(--clay)]">{g.history.kicker}</p>
+        <h2 class="section-title mt-3" set:html={g.history.h2}></h2>
+        <div class="mt-8 grid gap-8 lg:grid-cols-[1.2fr_.8fr]">
+          <div class="text-lg leading-9 text-stone-700 space-y-5">
+            {g.history.paragraphs.map((p) => <p set:html={p}></p>)}
+          </div>
+          <div class="grid gap-4">
+            {g.history.cards.map((c) => (
+              <div class="card p-6"><div class="text-3xl">{c.icon}</div><h3 class="mt-3 font-black">{c.title}</h3><p class="mt-2 text-stone-600">{c.text}</p></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="seasons" class="py-20 md:py-28">
+      <div class="mx-auto max-w-7xl px-5">
+        <p class="kicker text-[var(--clay)]">{g.seasons.kicker}</p>
+        <h2 class="section-title mt-3" set:html={g.seasons.h2}></h2>
+        <p class="mt-6 max-w-3xl text-lg leading-9 text-stone-700" set:html={g.seasons.intro}></p>
+        <div class="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          {g.seasons.cards.map((c) => (
+            <div class="card p-6"><h3 class="text-xl font-black text-[var(--clay)]">{c.title}</h3><p class="text-sm font-bold text-stone-500">{c.month}</p><ul class="mt-3 space-y-2 text-sm leading-7 text-stone-600">{c.items.map((i) => <li>{i}</li>)}</ul></div>
+          ))}
+        </div>
+        <div class="mt-10 card p-8">
+          <h3 class="text-2xl font-black" set:html={g.seasons.analysisTitle}></h3>
+          <div class="mt-5 grid gap-6 md:grid-cols-3 text-stone-600 leading-8">
+            {g.seasons.analysis.map((b) => (
+              <div><h4 class="font-black text-stone-900" set:html={b.title}></h4><p class="mt-2 text-sm" set:html={b.text}></p></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="services" class="bg-[#f3efe6] py-20 md:py-28">
+      <div class="mx-auto max-w-7xl px-5">
+        <p class="kicker text-[var(--clay)]">{g.services.kicker}</p>
+        <h2 class="section-title mt-3" set:html={g.services.h2}></h2>
+        <p class="mt-6 max-w-3xl text-lg leading-9 text-stone-700" set:html={g.services.intro}></p>
+        <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {g.services.cards.map((c) => (
+            <div class="card p-7"><div class="text-3xl">{c.icon}</div><h3 class="mt-3 font-black">{c.title}</h3><p class="mt-2 text-stone-600 text-sm leading-7">{c.text}</p></div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="itineraries" class="py-20 md:py-28">
+      <div class="mx-auto max-w-7xl px-5">
+        <p class="kicker text-[var(--clay)]">{g.itineraries.kicker}</p>
+        <h2 class="section-title mt-3" set:html={g.itineraries.h2}></h2>
+        <div class="mt-10 grid gap-5 md:grid-cols-3">
+          {g.itineraries.audiences.map((a) => (
+            <div class="card p-7"><h3 class="text-xl font-black">{a.title}</h3><ul class="mt-4 space-y-2 text-sm leading-7 text-stone-600">{a.items.map((i) => <li>{i}</li>)}</ul></div>
+          ))}
+        </div>
+        <div class="mt-10 grid gap-5 md:grid-cols-2">
+          {g.itineraries.trips.map((t) => (
+            <div class="rounded-3xl border border-stone-300 bg-white p-7"><h3 class="text-2xl font-black">{t.title}</h3><p class="mt-3 text-stone-600 leading-8">{t.text}</p></div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="responsibility" class="bg-[#4d5b35] py-20 text-white md:py-28">
+      <div class="mx-auto max-w-7xl px-5">
+        <p class="kicker text-[#dfe9d5]">{g.responsibility.kicker}</p>
+        <h2 class="section-title mt-3" set:html={g.responsibility.h2}></h2>
+        <p class="mt-6 max-w-3xl text-lg leading-9 text-white/80" set:html={g.responsibility.intro}></p>
+        <div class="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {g.responsibility.cards.map((c) => (
+            <div class="rounded-3xl border border-white/15 p-6"><h3 class="font-black">{c.title}</h3><p class="mt-2 text-sm text-white/70 leading-7">{c.text}</p></div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-[#dce8e4] py-20 md:py-28">
+      <div class="mx-auto max-w-7xl px-5">
+        <div class="grid gap-8 lg:grid-cols-3">
+          <div><p class="kicker text-[var(--clay)]">{g.costs.kicker}</p><h2 class="section-title mt-3" set:html={g.costs.h2}></h2></div>
+          {g.costs.cards.map((c) => (
+            <div class="card p-7">{c.items.map((it) => (
+              <div><h3 class="font-black">{it.h}</h3><p class="mt-3 text-stone-600">{it.p}</p></div>
+            ))}</div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" class="py-20 md:py-28">
+      <div class="mx-auto max-w-4xl px-5">
+        <p class="kicker text-[var(--clay)]">{g.faq.kicker}</p><h2 class="section-title mt-3" set:html={g.faq.h2}></h2>
+        <div class="mt-10 space-y-4">
+          {g.faq.items.map(([q, a]) => <details class="card p-6"><summary class="cursor-pointer text-lg font-black">{q}</summary><p class="mt-4 leading-8 text-stone-600" set:html={a}></p></details>)}
+        </div>
+      </div>
+    </section>
+
+    <section class="border-y border-stone-300 bg-white py-12">
+      <div class="mx-auto max-w-7xl px-5 text-sm leading-7 text-stone-600">
+        <h2 class="mb-4 text-lg font-black text-stone-900" set:html={g.sources.heading}></h2>
+        {sourcesParas.map((p) => <p class="mb-3" set:html={p}></p>)}
+      </div>
+    </section>
+  </main>
+
+  <footer class="bg-[#211916] py-10 text-center text-sm text-white/60">
+    <p>{g.footer}</p>
+  </footer>
+
+  <script is:inline>
+  (function(){
+    var I18N_EL = document.getElementById('weather-i18n');
+    var I18N = I18N_EL && I18N_EL.textContent ? JSON.parse(I18N_EL.textContent) : null;
+    if (!I18N) return;
+    var WEATHER = I18N.wmo;
+    var L = I18N.labels;
+    function beaufort(kmh){var t=[0,1,6,12,20,29,39,50,62,75,89,103],b=0;for(var i=1;i<t.length;i++){if(kmh>=t[i])b=i;}return b;}
+    function wInfo(c){return WEATHER[c]||{t:'—',i:'🌡️'};}
+    function buildAdvice(o,A){
+      var a={outfit:[],play:[],items:[],risks:[]};
+      var isLightRain=[51,53,55,56,57,61,80].indexOf(o.code)>=0;
+      var isModRain=[63,81].indexOf(o.code)>=0;
+      var isHeavyRain=[65,82].indexOf(o.code)>=0;
+      var isThunder=[95,96,99].indexOf(o.code)>=0;
+      var isClear=[0,1].indexOf(o.code)>=0;
+      var isCloudy=[2,3].indexOf(o.code)>=0;
+      var isFog=[45,48].indexOf(o.code)>=0;
+      var rain=isLightRain||isModRain||isHeavyRain||isThunder;
+      if(o.precip>=60){a.outfit.push(A.precipHighOutfit);a.play.push(A.precipHighPlay);a.items.push(A.precipHighItems);}
+      if(isLightRain){a.outfit.push(A.lightRainOutfit);a.items.push(A.lightRainItems);}
+      if(isModRain){a.risks.push(A.modRainRisk);a.items.push(A.modRainItems);}
+      if(isHeavyRain){a.risks.push(A.heavyRainRisk);a.items.push(A.heavyRainItems);}
+      if(isThunder){a.risks.push(A.thunderRisk);}
+      if(rain){a.play.push(A.rainPlay);}
+      if(o.tmax>=32){a.outfit.push(A.hotOutfit);a.play.push(A.hotPlay);a.items.push(A.hotItems);}
+      if(o.uv>=5){a.outfit.push(A.uvOutfit);a.items.push(A.uvItems);}
+      if((o.tmax-o.tmin)>8){a.outfit.push(A.tempDiffOutfit);}
+      if(o.tmax<=10){a.outfit.push(A.coldOutfit);a.items.push(A.coldItems);}
+      if(o.bf>=5&&o.bf<=6){a.outfit.push(A.windActiveOutfit);a.play.push(A.windActivePlay);}
+      if(o.bf>=7){a.risks.push(A.windStrongRisk);}
+      if(isClear){a.outfit.push(A.clearOutfit);a.play.push(A.clearPlay);a.items.push(A.clearItems);}
+      if(isCloudy){a.outfit.push(A.cloudyOutfit);a.play.push(A.cloudyPlay);}
+      if(isFog){a.risks.push(A.fogRisk);a.items.push(A.fogItems);}
+      return a;
+    }
+    function block(title,arr){
+      if(!arr.length)return '';
+      return '<div class="rounded-2xl border border-stone-200 bg-white/80 p-5"><h4 class="font-black text-stone-900 mb-2">'+title+'</h4><ul class="space-y-2 text-sm leading-7 text-stone-700">'+arr.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>';
+    }
+    function render(root,data){
+      var cur=data.current, d=data.daily;
+      var info=wInfo(cur.weather_code);
+      var tmax=Math.round(d.temperature_2m_max[0]), tmin=Math.round(d.temperature_2m_min[0]);
+      var precip=d.precipitation_probability_max[0], uv=d.uv_index_max[0];
+      var windKmh=cur.wind_speed_10m, bf=beaufort(windKmh);
+      var adv=buildAdvice({code:cur.weather_code,tmax:tmax,tmin:tmin,precip:precip,uv:uv,bf:bf}, I18N.advice);
+      var loc=root.getAttribute('data-locale'); var bftUnit=loc==='ar'?' بفورت':' Bft';
+      var risks = adv.risks.length
+        ? '<div class="rounded-2xl border border-red-300 bg-red-50 p-5"><h4 class="font-black text-red-700 mb-2">'+L.riskTitle+'</h4><ul class="space-y-2 text-sm leading-7 text-red-800">'+adv.risks.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>'
+        : '<div class="rounded-2xl border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-800">'+L.noRisk+'</div>';
+      var wd=I18N.wday;
+      var days='';
+      for(var i=0;i<d.time.length;i++){
+        var dt=new Date(d.time[i]+'T00:00');
+        var wname=i===0?I18N.today:wd[dt.getDay()];
+        var c=wInfo(d.weather_code[i]);
+        days+='<div class="flex-1 min-w-[112px] rounded-2xl border border-white/40 bg-white/70 p-4 text-center"><div class="text-sm font-bold text-stone-500">'+wname+'</div><div class="text-3xl my-2">'+c.i+'</div><div class="text-sm text-stone-700">'+c.t+'</div><div class="mt-2 font-black text-stone-900">'+Math.round(d.temperature_2m_max[i])+'° / '+Math.round(d.temperature_2m_min[i])+'°</div><div class="text-xs text-[#2f6f8f] mt-1">💧 '+d.precipitation_probability_max[i]+'%</div></div>';
+      }
+      root.innerHTML =
+        '<div class="grid gap-6 lg:grid-cols-3">'+
+          '<div class="lg:col-span-1 card p-7">'+
+            '<div class="flex items-center gap-4"><div class="text-6xl">'+info.i+'</div><div><div class="text-4xl font-black">'+Math.round(cur.temperature_2m)+'°</div><div class="text-stone-600">'+info.t+'</div></div></div>'+
+            '<div class="mt-5 grid grid-cols-2 gap-3 text-sm">'+
+              '<div class="rounded-xl bg-black/5 p-3"><div class="text-stone-500">'+L.highLow+'</div><div class="font-black text-stone-900">'+tmax+'° / '+tmin+'°</div></div>'+
+              '<div class="rounded-xl bg-black/5 p-3"><div class="text-stone-500">'+L.precip+'</div><div class="font-black text-stone-900">'+precip+'%</div></div>'+
+              '<div class="rounded-xl bg-black/5 p-3"><div class="text-stone-500">'+L.wind+'</div><div class="font-black text-stone-900">'+Math.round(windKmh)+' km/h ('+bf+bftUnit+')</div></div>'+
+              '<div class="rounded-xl bg-black/5 p-3"><div class="text-stone-500">'+L.uv+'</div><div class="font-black text-stone-900">'+uv+'</div></div>'+
+            '</div>'+
+          '</div>'+
+          '<div class="lg:col-span-2 space-y-4">'+
+            risks+
+            '<div class="grid gap-4 sm:grid-cols-3">'+
+              block(L.outfit,adv.outfit)+
+              block(L.play,adv.play)+
+              block(L.items,adv.items)+
+            '</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="mt-8"><h3 class="mb-3 text-lg font-black text-stone-900">'+L.forecast+'</h3><div class="flex gap-3 overflow-x-auto pb-2">'+days+'</div></div>';
+    }
+    function load(){
+      var root=document.getElementById('weather-root');
+      if(!root)return;
+      var initEl=document.getElementById('weather-init');
+      var init=null;
+      try{ init=initEl&&initEl.textContent?JSON.parse(initEl.textContent):null; }catch(e){ init=null; }
+      if(init&&init.current&&init.daily){ render(root,init); }
+      var lat=root.getAttribute('data-lat'), lon=root.getAttribute('data-lon');
+      var url='https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,uv_index_max,wind_gusts_10m_max&timezone=auto&forecast_days=7';
+      fetch(url).then(function(r){return r.json();}).then(function(data){
+        if(data&&data.current&&data.daily){ render(root,data); }
+      }).catch(function(){
+        if(!init||!init.current){ root.innerHTML='<div class="card p-8 text-stone-600">'+L.error+'</div>'; }
+      });
+    }
+    if(document.readyState!=='loading'){load();}else{document.addEventListener('DOMContentLoaded',load);}
+  })();
+  </script>
+</body>
+</html>

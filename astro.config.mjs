@@ -9,7 +9,9 @@ const SITE = 'https://ouzoudfalls.com';
 export default defineConfig({
   site: SITE || undefined,
   output: 'static',
-  integrations: SITE ? [sitemap()] : [],
+  integrations: SITE
+    ? [sitemap({ i18n: { defaultLocale: 'ar', locales: { ar: '', en: 'en', fr: 'fr', zh: 'zh' } } })]
+    : [],
   vite: {
     plugins: [tailwindcss()]
   }

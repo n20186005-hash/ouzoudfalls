@@ -1,6 +1,20 @@
 # شلالات أوزود — Astro site
 
-Single-page Arabic visitor guide for Ouzoud Waterfalls, Morocco.
+Quadrilingual (Arabic + English + French + Chinese) visitor guide for Ouzoud Waterfalls, Morocco.
+
+- `/` — Arabic (`ar`, RTL)
+- `/en/` — English (`en`, LTR)
+- `/fr/` — French (`fr`, LTR)
+- `/zh/` — Chinese (`zh`, LTR)
+
+All four main pages share one `GuidePage` component (`src/components/GuidePage.astro`); prose lives in
+`src/content/guide.ts` (ar/en) and `src/content/guide.fr.ts` / `src/content/guide.zh.ts`, language-neutral
+facts in `src/data/site.ts`. `hreflang` alternates (`ar` / `en` / `fr` / `zh` / `x-default`) are emitted in
+`<head>` and in `sitemap-index.xml`.
+
+Long-tail topic pages (one per language) live under `/guide/{slug}/`, `/en/guide/{slug}/`,
+`/fr/guide/{slug}/`, `/zh/guide/{slug}/`, rendered by `src/components/TopicPage.astro`
+from `src/content/topics.ts`: `marrakech-transport`, `best-season`, `tickets`.
 
 ## Stack
 - Astro 7.3.2
