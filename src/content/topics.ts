@@ -12,164 +12,299 @@ export interface Topic {
   blocks: TopicBlock[];
 }
 export const topics: Record<string, Record<Locale, Topic>> = {
-  'marrakech-transport': {
-    ar: {
-      kicker: 'الوصول',
-      h1: 'الوصول إلى شلالات أوزود من مراكش',
-      desc: 'طرق عملية للوصول إلى شلالات أوزود من مراكش: المسافة، مدة القيادة، رحلة اليوم المنظّمة، حافلة + تاكسي كبير، ونصائح المواقف.',
-      intro: 'تبعد شلالات أوزود نحو 180 كم عن مراكش. يأتي معظم الزوّار في رحلة يوم واحد، ولديك ثلاثة خيارات واقعية: القيادة الذاتية، رحلة منظّمة، أو النقل العام مع تاكسي مشترك للمرحلة الأخيرة.',
-      blocks: [
-        { h2: 'بالسيارة (الأكثر مرونة)', body: 'اتبع الطريق A7 نحو بني ملال، ثم R208 إلى أزيلال واتبع اللافتات إلى أوزود. المقطع الأخير جبلي — خفّف السرعة بعد الغروب أو المطر. الرحلة عادة 2.5–3.5 ساعات. مواقف قرب مداخل المسارات مدفوعة؛ احمل نقوداً مغربية صغيرة.' },
-        { h2: 'رحلة يوم منظّمة', body: 'تعرُض وكالات مراكش جولات يومية كاملة إلى أوزود، غالباً مع التقاط من الفندق ومرشد وتوقفات في الطريق. هذا الخيار الأسهل إن أردت تجربة من الباب للباب دون قيادة.' },
-        { h2: 'حافلة + تاكسي كبير (الأرخص)', body: 'اركب حافلة بين المدن من مراكش إلى أزيلال أو بني ملال، ثم «تاكسي كبير» مشترك إلى قرية أوزود. هو الأرخص لكن الأطول؛ أكّد مواعيد العودة مسبقاً حتى لا تعلق.' },
-        { h2: 'التوقيت ونصائح', body: 'غادِر مراكش باكراً (قبل الثامنة صباحاً) للاستمتاع بالشلال قبل زحام وحدّة ظهيرة الصيف. الدخول مجاني؛ تدفع فقط للمواقف والقارب والمرشد والطعام. احتفظ بماء وواقٍ شمسي في السيارة.' }
+  "marrakech-transport": {
+    "en": {
+      "kicker": "Plan with current information",
+      "h1": "Marrakech to Ouzoud: confirm transport and return",
+      "desc": "From Marrakech, confirm your exact pickup, destination, total price, waiting time and return arrangement before booking a driver or excursion. A quoted journey time can change with roads and traffic; leave adequate daylight for the visit.",
+      "intro": "Ouzoud Falls is a natural destination in Azilal province, Morocco. The province lists it at Ouzoud, Aït Taguella, between the High and Middle Atlas. Its published map point identifies the site, not a confirmed entrance or an accessible route.",
+      "blocks": [
+        {
+          "h2": "Marrakech to Ouzoud: confirm transport and return · 1",
+          "body": "From Marrakech, confirm your exact pickup, destination, total price, waiting time and return arrangement before booking a driver or excursion. A quoted journey time can change with roads and traffic; leave adequate daylight for the visit."
+        },
+        {
+          "h2": "Marrakech to Ouzoud: confirm transport and return · 2",
+          "body": "For a group trip, ask what the price includes: transport, guiding, meals, parking, optional activities and return pickup. Confirm the provider and cancellation terms directly; this guide does not sell or endorse an excursion."
+        },
+        {
+          "h2": "Marrakech to Ouzoud: confirm transport and return · 3",
+          "body": "For public transport or a shared taxi, confirm the actual connection, final stop, last return and the final approach before departure. Do not assume a frequent direct service or a vehicle waiting at the waterfall."
+        },
+        {
+          "h2": "Marrakech to Ouzoud: confirm transport and return · 4",
+          "body": "Ask where legal parking and drop-off are available on your visit date, how charges are calculated and where you will meet your driver again. A map marker is not an entrance or parking-space guarantee."
+        }
       ]
     },
-    en: {
-      kicker: 'Transport',
-      h1: 'How to Get to Ouzoud Waterfalls from Marrakech',
-      desc: 'Practical ways to reach Ouzoud Waterfalls from Marrakech: distance, drive time, organized day trips, bus + grand taxi, and parking tips for a smooth day trip.',
-      intro: 'Ouzoud Waterfalls sit about 180 km from Marrakech. Most visitors come as a day trip, and you have three realistic options: self-drive, an organized excursion, or public transport with a shared taxi for the final leg.',
-      blocks: [
-        { h2: 'By car (most flexible)', body: 'Follow the A7 toward Beni Mellal, then the R208 to Azilal and the signs to Ouzoud. The final stretch is mountainous — slow down after sunset or rain. The drive is usually 2.5–3.5 hours. Parking near the trail entrances is paid; bring small Moroccan cash.' },
-        { h2: 'Organized day trip', body: 'Many Marrakech agencies sell full-day tours to Ouzoud, often including hotel pickup, a guide and stops along the way. This is the easiest option if you want a door-to-door experience without driving.' },
-        { h2: 'Bus + grand taxi (cheapest)', body: 'Take an intercity bus from Marrakech to Azilal or Beni Mellal, then a shared "grand taxi" to Ouzoud village. It is the cheapest route but the longest; confirm the return times in advance so you are not stranded.' },
-        { h2: 'Timing & tips', body: 'Leave Marrakech early (before 8 am) to enjoy the falls before the midday crowds and heat. The site entry is free; you only pay for parking, boat ride, guide and food. Keep water and sun protection in the car.' }
+    "ar": {
+      "kicker": "خطط بمعلومات حالية",
+      "h1": "من مراكش إلى شلالات أوزود: تأكيد الطريق والعودة",
+      "desc": "من مراكش، أكد مكان الانطلاق والوجهة والثمن الكامل والانتظار وترتيبات العودة قبل حجز سيارة أو رحلة. قد تتغير مدة الطريق بسبب المرور وحالته؛ اترك وقتاً كافياً للزيارة في ضوء النهار.",
+      "intro": "شلالات أوزود وجهة طبيعية بإقليم أزيلال في المغرب. يحدد موقع الإقليم المكان في أوزود، جماعة آيت تكلا، بين الأطلس الكبير والمتوسط. النقطة المنشورة تحدد الموقع ولا تؤكد مدخلاً معيناً أو مساراً ميسراً.",
+      "blocks": [
+        {
+          "h2": "من مراكش إلى شلالات أوزود: تأكيد الطريق والعودة · 1",
+          "body": "من مراكش، أكد مكان الانطلاق والوجهة والثمن الكامل والانتظار وترتيبات العودة قبل حجز سيارة أو رحلة. قد تتغير مدة الطريق بسبب المرور وحالته؛ اترك وقتاً كافياً للزيارة في ضوء النهار."
+        },
+        {
+          "h2": "من مراكش إلى شلالات أوزود: تأكيد الطريق والعودة · 2",
+          "body": "في الرحلة الجماعية اسأل عما يشمله السعر: النقل والإرشاد والطعام والمواقف والأنشطة الاختيارية والعودة. تحقق من مقدم الخدمة وشروط الإلغاء مباشرة؛ لا يبيع هذا الدليل الرحلات ولا يزكي مقدماً معيناً."
+        },
+        {
+          "h2": "من مراكش إلى شلالات أوزود: تأكيد الطريق والعودة · 3",
+          "body": "للنقل العمومي أو سيارة الأجرة المشتركة، تحقق من الوصلة الفعلية وآخر محطة وآخر عودة والجزء الأخير من الطريق قبل الانطلاق. لا تفترض وجود خدمة مباشرة متكررة أو سيارة تنتظرك عند الشلال."
+        },
+        {
+          "h2": "من مراكش إلى شلالات أوزود: تأكيد الطريق والعودة · 4",
+          "body": "اسأل عن مكان الوقوف القانوني والنزول المتاح في يوم زيارتك وكيفية احتساب الثمن ونقطة لقاء السائق مجدداً. علامة الخريطة لا تضمن مدخلاً أو مكان وقوف."
+        }
       ]
     },
-    fr: {
-      kicker: 'Transport',
-      h1: "Accès aux cascades d’Ouzoud depuis Marrakech",
-      desc: "Comment rejoindre les cascades d’Ouzoud depuis Marrakech : distance, durée, excursion organisée, bus + grand taxi et conseils de stationnement.",
-      intro: "Les cascades d’Ouzoud se trouvent à environ 180 km de Marrakech. La plupart des visiteurs y viennent en excursion d’une journée, avec trois options : voiture, excursion organisée ou transport public avec taxi partagé pour le dernier tronçon.",
-      blocks: [
-        { h2: 'En voiture (le plus flexible)', body: "Suivez l’A7 vers Béni Mellal, puis la R208 vers Azilal et les panneaux Ouzoud. Le dernier tronçon est montagneux — réduisez la vitesse après le coucher du soleil ou la pluie. Le trajet dure généralement 2,5 à 3,5 h. Le parking près des entrées est payant ; prévoyez de la petite monnaie." },
-        { h2: 'Excursion organisée', body: "Beaucoup d’agences à Marrakech proposent des circuits d’une journée vers Ouzoud, souvent avec prise en charge à l’hôtel, guide et arrêts en cours de route. C’est l’option la plus simple sans conduire." },
-        { h2: 'Bus + grand taxi (le moins cher)', body: "Prenez un car interurbain de Marrakech à Azilal ou Béni Mellal, puis un « grand taxi » partagé vers le village d’Ouzoud. C’est le moins cher mais le plus long ; confirmez les horaires de retour à l’avance." },
-        { h2: 'Horaires & conseils', body: "Partez de Marrakech tôt (avant 8 h) pour profiter des chutes avant la chaleur et la foule de midi. L’entrée est gratuite ; vous ne payez que parking, barque, guide et repas. Gardez de l’eau et de la protection solaire." }
+    "fr": {
+      "kicker": "Préparer avec des informations actuelles",
+      "h1": "Marrakech–Ouzoud: confirmer trajet et retour",
+      "desc": "Depuis Marrakech, confirmez le lieu de départ, la destination, le prix total, l’attente et le retour avant de réserver un chauffeur ou une excursion. La durée dépend de la route et du trafic; gardez assez de temps de visite de jour.",
+      "intro": "Les cascades d’Ouzoud sont une destination naturelle de la province d’Azilal, au Maroc. La province situe le site à Ouzoud, Aït Taguella, entre le Haut et le Moyen Atlas. Son point cartographique ne confirme ni une entrée précise ni un parcours accessible.",
+      "blocks": [
+        {
+          "h2": "Marrakech–Ouzoud: confirmer trajet et retour · 1",
+          "body": "Depuis Marrakech, confirmez le lieu de départ, la destination, le prix total, l’attente et le retour avant de réserver un chauffeur ou une excursion. La durée dépend de la route et du trafic; gardez assez de temps de visite de jour."
+        },
+        {
+          "h2": "Marrakech–Ouzoud: confirmer trajet et retour · 2",
+          "body": "Pour une sortie en groupe, demandez ce qui est inclus: transport, guide, repas, parking, activités et retour. Vérifiez le prestataire et les conditions d’annulation directement; ce guide ne vend ni ne recommande une excursion particulière."
+        },
+        {
+          "h2": "Marrakech–Ouzoud: confirmer trajet et retour · 3",
+          "body": "En transport public ou taxi collectif, confirmez la correspondance réelle, le dernier arrêt, le dernier retour et l’approche finale avant de partir. Ne présumez pas un service direct fréquent ou un véhicule vous attendant aux chutes."
+        },
+        {
+          "h2": "Marrakech–Ouzoud: confirmer trajet et retour · 4",
+          "body": "Demandez où stationner légalement et déposer les passagers le jour prévu, comment le prix est calculé et où retrouver votre chauffeur. Un point sur la carte ne garantit ni entrée ni place de parking."
+        }
       ]
     },
-    zh: {
-      kicker: '交通',
-      h1: '从马拉喀什前往橄榄树瀑布（奥祖德）',
-      desc: '从马拉喀什到橄榄树瀑布的实用交通方式：距离、车程、一日游、大巴+拼车出租，以及停车贴士。',
-      intro: '橄榄树瀑布距马拉喀什约 180 公里。多数游客以一日游方式前往，主要有三种选择：自驾、参加组织的一日游，或公共交通加拼车出租走完最后一段。',
-      blocks: [
-        { h2: '自驾（最灵活）', body: '沿 A7 往贝尼迈拉勒方向，转 R208 至阿齐拉勒，再按路牌前往奥祖德。最后一段为山路，日落后或雨后请减速。车程通常 2.5–3.5 小时。步道入口附近停车收费，备好摩洛哥小额现金。' },
-        { h2: '组织一日游', body: '马拉喀什许多旅行社出售奥祖德全天行程，常含酒店接送、向导及沿途停靠。不想开车、想要一站式体验，这是最省心的选择。' },
-        { h2: '大巴 + 大出租车（最省钱）', body: '从马拉喀什乘城际大巴到阿齐拉勒或贝尼迈拉勒，再换乘拼车“大出租车”到奥祖德村。最省钱但最久；提前确认返程时间以免滞留。' },
-        { h2: '时间与贴士', body: '清晨（早 8 点前）从马拉喀什出发，可在正午人流与高温前畅游瀑布。景区免费进入；只需为停车、乘船、向导与餐饮付费。车内备好饮水与防晒。' }
+    "zh": {
+      "kicker": "按实际条件准备",
+      "h1": "马拉喀什到奥祖德：确认交通与返程",
+      "desc": "从马拉喀什出发，预约司机或行程前确认实际上车点、目的地、总价、等待及返程安排。路况和交通可能改变时间，须为白天游览和返回预留余量。",
+      "intro": "奥祖德瀑布位于摩洛哥阿齐拉勒省。省政府将地点列于奥祖德、Aït Taguella，介于高阿特拉斯与中阿特拉斯之间。官方页面的地图点用于标示景点，并不是经确认的入口或无障碍路线。",
+      "blocks": [
+        {
+          "h2": "马拉喀什到奥祖德：确认交通与返程 · 1",
+          "body": "从马拉喀什出发，预约司机或行程前确认实际上车点、目的地、总价、等待及返程安排。路况和交通可能改变时间，须为白天游览和返回预留余量。"
+        },
+        {
+          "h2": "马拉喀什到奥祖德：确认交通与返程 · 2",
+          "body": "团体行程应逐项确认交通、导览、餐饮、停车、可选活动及回程是否包含。直接核对提供者与取消条款；本站不销售或背书特定行程。"
+        },
+        {
+          "h2": "马拉喀什到奥祖德：确认交通与返程 · 3",
+          "body": "乘公共交通或拼车前，确认实际接驳、最后下车点、最晚返程和最后一段路。不假设有频繁直达班次或瀑布旁随时有车等候。"
+        },
+        {
+          "h2": "马拉喀什到奥祖德：确认交通与返程 · 4",
+          "body": "询问到访日可合法停车和下客的位置、收费方式及再次会合地点。地图标记不保证入口或停车空位。"
+        }
       ]
     }
   },
-  'best-season': {
-    ar: {
-      kicker: 'أفضل وقت',
-      h1: 'أفضل وقت لزيارة شلالات أوزود',
-      desc: 'متى تزور شلالات أوزود: الجريان حسب الموسم، الطقس، الازدحام وإضاءة التصوير، إضافة إلى ذوبان ثلوج الأطلس في الربيع.',
-      intro: 'أوزود مناخه جبلي متوسطي. باختصار: الربيع (مارس–مايو) يمنح أقوى جريان بعد ذوبان ثلوج الأطلس، بينما الخريف الأكثر راحة والأقل ازدحاماً.',
-      blocks: [
-        { h2: 'الربيع (مارس–مايو) — أقوى جريان', body: 'ذوبان ثلوج الأطلس يغذّي النهر، فتصل الشلالات إلى أقصى قوتها. الخضرة والزهور البرّية في ذروتها، والحرارة لطيفة (15–25°م). تكتظ عطلة نهاية الأسبوع.' },
-        { h2: 'الصيف (يونيو–أغسطس) — الأكثر حرارة وازدحاماً', body: 'ترتفع الحرارة إلى 30–38°م ويخفّ الجريان لكنه لا يتوقف. الصباحات الأهدأ؛ عواصف رعدية محتملة بعد الظهيرة. هذا موسم الذروة، لذا احرص على الوصول مبكّراً.' },
-        { h2: 'الخريف (سبتمبر–نوفمبر) — الأكثر توازناً', body: 'أيام دافئة ومريحة بإضاءة ممتازة للتصوير. يعود منسوب المياه تدريجياً ويقلّ الزحام مقارنة بالصيف.' },
-        { h2: 'الشتاء (ديسمبر–فبراير) — هادئ وضبابي', body: 'أبرد الشهور، ربما ضبابي، لكن الشلالات قوية بعد المطر. المسارات قد تكون زلقة — ارتدِ حذاءً مناسباً وتمهّل.' },
-        { h2: 'نصيحة تصوير', body: 'للقبض على قوس قزح داخل الرذاذ، استهدف منتصف النهار بيوم صيف صافٍ؛ ولإضاءة ناعمة ونقاط مشاهدة فارغة، اختر شروق أو غروب الشمس عند الحافة العليا.' }
+  "best-season": {
+    "en": {
+      "kicker": "Plan with current information",
+      "h1": "When to visit Ouzoud: forecast and access checks",
+      "desc": "Before choosing a date, compare a recent regional forecast with official warnings and local access information. No fixed month guarantees ideal water flow, clear skies or safe paths.",
+      "intro": "Regional model forecast, not a measurement at the waterfall or a statement that paths are open. Fresh data only; no old build-time snapshot or climate average is substituted.",
+      "blocks": [
+        {
+          "h2": "When to visit Ouzoud: forecast and access checks · 1",
+          "body": "Before choosing a date, compare a recent regional forecast with official warnings and local access information. No fixed month guarantees ideal water flow, clear skies or safe paths."
+        },
+        {
+          "h2": "When to visit Ouzoud: forecast and access checks · 2",
+          "body": "After rain, ask about local closures and route conditions before descending. Do not infer that a forecast for the village describes the whole upstream catchment or river response."
+        },
+        {
+          "h2": "When to visit Ouzoud: forecast and access checks · 3",
+          "body": "For a warmer forecast, plan shade, water and a pace suited to your group. For a cooler forecast, bring a layer; the model does not assess an individual’s fitness or access needs."
+        },
+        {
+          "h2": "When to visit Ouzoud: forecast and access checks · 4",
+          "body": "For photography, choose daylight within confirmed access arrangements. Light, rainbows and water volume are not guaranteed; do not approach an edge or restricted route for a picture."
+        }
       ]
     },
-    en: {
-      kicker: 'When to visit',
-      h1: 'Best Time to Visit Ouzoud Waterfalls',
-      desc: 'When to visit Ouzoud Waterfalls: season-by-season flow, weather, crowds and photography light, plus the spring snowmelt that makes the falls fullest.',
-      intro: 'Ouzoud has a mountain Mediterranean climate. The short answer: spring (March–May) gives the fullest water after Atlas snowmelt, while autumn is the most comfortable and least crowded.',
-      blocks: [
-        { h2: 'Spring (March–May) — fullest water', body: 'Snowmelt from the Atlas feeds the river, so the falls run at their strongest. Greenery and wildflowers peak, and temperatures are mild (15–25°C). Weekends get busy.' },
-        { h2: 'Summer (June–August) — hottest, busiest', body: 'Heat climbs to 30–38°C and the flow eases, but it never stops. Mornings are calmest; afternoon thunderstorms are possible. This is peak tourist season, so arrive early.' },
-        { h2: 'Autumn (September–November) — most balanced', body: 'Warm, comfortable days with excellent photographic light. Water levels recover gradually and crowds thin out compared with summer.' },
-        { h2: 'Winter (December–February) — quiet & moody', body: 'The coldest months, sometimes foggy, but the falls are powerful after rain. Trails can be slippery — wear proper shoes and take your time.' },
-        { h2: 'Photography tip', body: 'For rainbows in the spray, aim for midday on clear summer days; for soft light and empty viewpoints, choose sunrise or sunset at the upper rim.' }
+    "ar": {
+      "kicker": "خطط بمعلومات حالية",
+      "h1": "وقت زيارة أوزود: الطقس والوصول الحالي",
+      "desc": "قبل اختيار الموعد قارن توقعاً إقليمياً حديثاً بالتحذيرات الرسمية ومعلومات الوصول المحلية. لا يضمن شهر ثابت تدفقاً مثالياً أو سماء صافية أو مسارات آمنة.",
+      "intro": "توقع إقليمي من نموذج، وليس قياساً عند الشلال أو إعلاناً بأن المسارات مفتوحة. نعرض بيانات حديثة فقط بلا لقطة قديمة من البناء أو متوسط مناخي بديل.",
+      "blocks": [
+        {
+          "h2": "وقت زيارة أوزود: الطقس والوصول الحالي · 1",
+          "body": "قبل اختيار الموعد قارن توقعاً إقليمياً حديثاً بالتحذيرات الرسمية ومعلومات الوصول المحلية. لا يضمن شهر ثابت تدفقاً مثالياً أو سماء صافية أو مسارات آمنة."
+        },
+        {
+          "h2": "وقت زيارة أوزود: الطقس والوصول الحالي · 2",
+          "body": "بعد المطر اسأل عن الإغلاق وحالة الطريق قبل النزول. لا تفترض أن توقع القرية يمثل كامل الحوض المائي أو استجابة النهر."
+        },
+        {
+          "h2": "وقت زيارة أوزود: الطقس والوصول الحالي · 3",
+          "body": "عند توقع الدفء خطط للظل والماء ووتيرة تناسب مجموعتك. وعند توقع البرودة احمل طبقة إضافية؛ لا يقيم النموذج لياقة الشخص أو احتياجات الوصول."
+        },
+        {
+          "h2": "وقت زيارة أوزود: الطقس والوصول الحالي · 4",
+          "body": "للتصوير اختر ضوء النهار ضمن ترتيبات وصول مؤكدة. الضوء وقوس المطر وحجم الماء غير مضمونة؛ لا تقترب من الحواف أو المسارات المقيدة للحصول على صورة."
+        }
       ]
     },
-    fr: {
-      kicker: 'Quand visiter',
-      h1: 'Meilleure saison pour visiter les cascades d’Ouzoud',
-      desc: 'Quand visiter les cascades d’Ouzoud : débit par saison, météo, affluence et lumière pour la photo, plus la fonte des neiges au printemps.',
-      intro: 'Ouzoud a un climat montagnard méditerranéen. En bref : le printemps (mars–mai) offre la plus forte chute après la fonte des neiges de l’Atlas, tandis que l’automne est le plus confortable et le moins fréquenté.',
-      blocks: [
-        { h2: 'Printemps (mars–mai) — chute maximale', body: "La fonte des neiges de l’Atlas alimente la rivière, la chute est à son plus fort. La végétation et les fleurs sauvages culminent, et il fait doux (15–25 °C). Les week-ends sont chargés." },
-        { h2: 'Été (juin–août) — chaud et fréquenté', body: "La chaleur atteint 30–38 °C et le débit diminue, mais ne s’arrête jamais. Les matins sont les plus calmes ; des orages en après-midi sont possibles. C’est la haute saison, partez tôt." },
-        { h2: 'Automne (septembre–novembre) — le plus équilibré', body: "Jours chauds et confortables avec une lumière excellente pour la photo. Le niveau d’eau remonte progressivement et l’affluence diminue par rapport à l’été." },
-        { h2: 'Hiver (décembre–février) — calme et brumeux', body: "Les mois les plus froids, parfois brumeux, mais la chute est puissante après la pluie. Les sentiers peuvent être glissants — portez de bonnes chaussures et prenez votre temps." },
-        { h2: 'Conseil photo', body: "Pour un arc-en-ciel dans le voile, visez midi par jour clair en été ; pour une lumière douce et des points de vue vides, choisissez le lever ou le coucher du soleil sur le bord supérieur." }
+    "fr": {
+      "kicker": "Préparer avec des informations actuelles",
+      "h1": "Quand visiter Ouzoud: météo et accès",
+      "desc": "Avant de choisir une date, comparez une prévision régionale récente aux alertes officielles et aux informations locales. Aucun mois fixe ne garantit débit idéal, ciel clair ou chemins sûrs.",
+      "intro": "Prévision régionale modélisée, pas une mesure aux cascades ni une confirmation d’ouverture des chemins. Aucune ancienne capture de construction ou moyenne climatique ne remplace les données récentes.",
+      "blocks": [
+        {
+          "h2": "Quand visiter Ouzoud: météo et accès · 1",
+          "body": "Avant de choisir une date, comparez une prévision régionale récente aux alertes officielles et aux informations locales. Aucun mois fixe ne garantit débit idéal, ciel clair ou chemins sûrs."
+        },
+        {
+          "h2": "Quand visiter Ouzoud: météo et accès · 2",
+          "body": "Après la pluie, renseignez-vous sur les fermetures et les chemins avant de descendre. La prévision du village ne représente pas forcément tout le bassin versant ou la réaction du cours d’eau."
+        },
+        {
+          "h2": "Quand visiter Ouzoud: météo et accès · 3",
+          "body": "Par prévision chaude, prévoyez ombre, eau et rythme adapté au groupe. Par temps plus froid, ajoutez une couche; le modèle n’évalue ni condition physique ni besoins d’accès."
+        },
+        {
+          "h2": "Quand visiter Ouzoud: météo et accès · 4",
+          "body": "Pour les photos, choisissez le jour et un accès confirmé. Lumière, arc-en-ciel et débit ne sont pas garantis; ne franchissez pas une limite pour une image."
+        }
       ]
     },
-    zh: {
-      kicker: '何时前往',
-      h1: '橄榄树瀑布最佳游览季节',
-      desc: '橄榄树瀑布何时去最好：按季节的水量、天气、人流与摄影光线，以及让瀑布最丰沛的春季融雪。',
-      intro: '奥祖德属山地地中海气候。一句话：春季（3–5 月）阿特拉斯山融雪后水量最丰；秋季最舒适、人最少。',
-      blocks: [
-        { h2: '春季（3–5 月）— 水量最丰', body: '阿特拉斯山融雪补给河流，瀑布最为壮观。绿意与野花正盛，气温温和（15–25°C）。周末人气较旺。' },
-        { h2: '夏季（6–8 月）— 最热最旺', body: '气温升至 30–38°C，水量减少但不断流。清晨最安静；午后可能有雷阵雨。游客高峰季，请早到。' },
-        { h2: '秋季（9–11 月）— 最均衡', body: '温暖舒适，摄影光线极佳。水量逐渐回升，相比夏季人流减少。' },
-        { h2: '冬季（12–2 月）— 清静有雾', body: '最冷月份，有时有雾，但雨后瀑布气势十足。步道可能湿滑——穿合适的鞋、放慢脚步。' },
-        { h2: '摄影贴士', body: '想拍水雾中的彩虹，选晴朗夏日的正午；想拍柔和光线与空旷观景台，选顶部边缘的日出或日落。' }
+    "zh": {
+      "kicker": "按实际条件准备",
+      "h1": "奥祖德到访时间：天气与通行核对",
+      "desc": "选择日期前，将近期区域天气预报与官方警示、当地通行消息一起核对。没有某个月份能保证理想水量、晴空或安全路径。",
+      "intro": "区域模型预报，不是瀑布现场测量，也不代表路径开放。仅显示足够新且有效的数据，不用旧构建快照或气候平均补充。",
+      "blocks": [
+        {
+          "h2": "奥祖德到访时间：天气与通行核对 · 1",
+          "body": "选择日期前，将近期区域天气预报与官方警示、当地通行消息一起核对。没有某个月份能保证理想水量、晴空或安全路径。"
+        },
+        {
+          "h2": "奥祖德到访时间：天气与通行核对 · 2",
+          "body": "雨后先问是否关闭或路径受影响，再考虑下行。村落预报不一定能代表整个上游汇水区和河流反应。"
+        },
+        {
+          "h2": "奥祖德到访时间：天气与通行核对 · 3",
+          "body": "预报较热时安排遮阴、饮水和适合队伍的步速；较冷时加一层衣物。模型不能评估个人体能或无障碍需求。"
+        },
+        {
+          "h2": "奥祖德到访时间：天气与通行核对 · 4",
+          "body": "摄影应选择已确认通行时段内的白天。光线、彩虹与水量不保证出现；不要为了拍照靠近边缘或越过限制。"
+        }
       ]
     }
   },
-  'tickets': {
-    ar: {
-      kicker: 'التكاليف',
-      h1: 'تذاكر شلالات أوزود ورسوم الدخول والقارب',
-      desc: 'هل دخول شلالات أوزود مدفوع؟ الدخول، القارب، المواقف، المرشد وما قد تدفعه — تفصيل واضح للتكاليف.',
-      intro: 'الخبر الجيد: لا توجد تذكرة لدخول الموقع الطبيعي نفسه. تدفع فقط للخدمات الاختيارية. إليك ما تتوقعه.',
-      blocks: [
-        { h2: 'دخول الموقع — مجاني', body: 'المشي على المسارات ومشاهدة الشلال من الحافة أو الوادي مجاني. لا يوجد بوّابة أو تذكرة دخول للمنطقة الطبيعية.' },
-        { h2: 'القارب (اختياري)', body: 'رحلة قارب قصيرة عند قاعدة الشلال اختيارية ومدفوعة محلياً. تحدّد الأسعار جهات تشغيل محلية وقد تتغير حسب الموسم، لذا أكّد الأجرة قبل الركوب.' },
-        { h2: 'المواقف', body: 'مواقف صغيرة مدفوعة قرب المداخل. اتفق على السعر قبل ترك السيارة؛ احتفظ بنقود مغربية صغيرة.' },
-        { h2: 'المرشد (اختياري)', body: 'غير مطلوب للمسار الرئيسي، لكن مرشداً محلياً مفيد إن أردت شرحاً أو معرفة منبع الشلال أو مسارات أطول نحو إيمي نفري.' },
-        { h2: 'الطعام والإضافات', body: 'المطاعم والمقاهي والتذكارات وزيت الزيتون مدفوعة بشكل منفصل. ضع ميزانية متواضعة لوجبة محلية وماء.' }
+  "tickets": {
+    "en": {
+      "kicker": "Plan with current information",
+      "h1": "Ouzoud tickets: check access and service charges",
+      "desc": "Google Maps showed “free” and “24 hours” in the 29 October 2026 listing snapshot. No current authority timetable or uniform admission tariff was verified. These labels do not establish safe night access, free parking, a free boat ride or unrestricted entry to every path.",
+      "intro": "Google Maps showed “free” and “24 hours” in the 29 October 2026 listing snapshot. No current authority timetable or uniform admission tariff was verified. These labels do not establish safe night access, free parking, a free boat ride or unrestricted entry to every path.",
+      "blocks": [
+        {
+          "h2": "Ouzoud tickets: check access and service charges · 1",
+          "body": "Google Maps showed “free” and “24 hours” in the 29 October 2026 listing snapshot. No current authority timetable or uniform admission tariff was verified. These labels do not establish safe night access, free parking, a free boat ride or unrestricted entry to every path."
+        },
+        {
+          "h2": "Ouzoud tickets: check access and service charges · 2",
+          "body": "Ask for a current menu and the total price before ordering; check whether drinks, service or a view-side table cost extra. This guide has not verified specific businesses or today’s menu."
+        },
+        {
+          "h2": "Ouzoud tickets: check access and service charges · 3",
+          "body": "Before paying for a guide or boat, agree the route, duration, included services, equipment and cancellation terms. No current operator or activity tariff has been verified here."
+        },
+        {
+          "h2": "Ouzoud tickets: check access and service charges · 4",
+          "body": "Choose a permitted viewpoint after checking the current route and return climb. Ask specifically about steps, gradients, surfaces, barriers, seating and boarding assistance where relevant. This guide has not audited an accessible route and does not guarantee a complete descent for every visitor."
+        }
       ]
     },
-    en: {
-      kicker: 'Costs',
-      h1: 'Ouzoud Waterfalls Tickets, Entry Fee & Boat Ride',
-      desc: 'Is Ouzoud Waterfalls free? Entry, boat ride, parking, guide and what you might pay — a clear breakdown of costs at Ouzoud.',
-      intro: 'Good news: there is no ticket to enter the natural site itself. You only pay for optional services. Here is what to expect.',
-      blocks: [
-        { h2: 'Entry to the site — free', body: 'Walking the trails and viewing the falls from the rim or the valley is free. There is no official gate or entry ticket for the natural area.' },
-        { h2: 'Boat ride (optional)', body: 'A short boat trip at the base of the falls is optional and paid locally. Prices are set by local operators and can change by season, so confirm the fare before boarding.' },
-        { h2: 'Parking', body: 'Small paid lots sit near the entrances. Agree the price before leaving your car; keep small Moroccan cash handy.' },
-        { h2: 'Guide (optional)', body: 'Not required for the main path, but a local guide is useful if you want context, the source of the falls, or longer routes toward Imi Nfri.' },
-        { h2: 'Food & extras', body: 'Restaurants, cafés, souvenirs and olive oil are paid separately. Budget a modest amount for a local meal and water.' }
+    "ar": {
+      "kicker": "خطط بمعلومات حالية",
+      "h1": "أوزود: التحقق من الدخول ورسوم الخدمات",
+      "desc": "أظهرت خرائط Google عبارة «مجاني» و«مفتوح 24 ساعة» في لقطة 29 أكتوبر 2026. لم نتحقق من جدول رسمي حالي أو تعرفة دخول موحدة. لا تثبت هذه العبارات سلامة الزيارة ليلاً أو مجانية المواقف والقوارب أو حرية دخول كل المسارات.",
+      "intro": "أظهرت خرائط Google عبارة «مجاني» و«مفتوح 24 ساعة» في لقطة 29 أكتوبر 2026. لم نتحقق من جدول رسمي حالي أو تعرفة دخول موحدة. لا تثبت هذه العبارات سلامة الزيارة ليلاً أو مجانية المواقف والقوارب أو حرية دخول كل المسارات.",
+      "blocks": [
+        {
+          "h2": "أوزود: التحقق من الدخول ورسوم الخدمات · 1",
+          "body": "أظهرت خرائط Google عبارة «مجاني» و«مفتوح 24 ساعة» في لقطة 29 أكتوبر 2026. لم نتحقق من جدول رسمي حالي أو تعرفة دخول موحدة. لا تثبت هذه العبارات سلامة الزيارة ليلاً أو مجانية المواقف والقوارب أو حرية دخول كل المسارات."
+        },
+        {
+          "h2": "أوزود: التحقق من الدخول ورسوم الخدمات · 2",
+          "body": "اطلب قائمة حالية والثمن الإجمالي قبل الطلب، وتحقق من المشروبات والخدمة وأي رسوم إضافية. لم نتحقق من مطاعم محددة أو قائمة اليوم."
+        },
+        {
+          "h2": "أوزود: التحقق من الدخول ورسوم الخدمات · 3",
+          "body": "قبل دفع ثمن دليل أو قارب اتفق على المسار والمدة والخدمات والمعدات وشروط الإلغاء. لم نتحقق هنا من مشغل حالي أو تعرفة نشاط."
+        },
+        {
+          "h2": "أوزود: التحقق من الدخول ورسوم الخدمات · 4",
+          "body": "اختر نقطة مشاهدة مسموحاً بها بعد التحقق من حالة المسار والصعود في العودة. اسأل عن الدرج والانحدار والسطح والحواجز والاستراحة وأي مساعدة لازمة. لم يجر هذا الدليل تدقيقاً لمسار ميسر ولا يضمن نزولاً كاملاً لكل الزوار."
+        }
       ]
     },
-    fr: {
-      kicker: 'Coûts',
-      h1: 'Billets, entrée et barque aux cascades d’Ouzoud',
-      desc: 'L’entrée aux cascades d’Ouzoud est-elle payante ? Entrée, barque, parking, guide et ce que vous pourriez payer — une explication claire.',
-      intro: 'Bonne nouvelle : il n’y a pas de billet pour entrer dans le site naturel lui-même. Vous ne payez que les services optionnels. Voici à quoi vous attendre.',
-      blocks: [
-        { h2: 'Entrée du site — gratuite', body: "Marcher sur les sentiers et voir la chute depuis le bord ou la vallée est gratuit. Il n’y a pas de guichet ni de billet d’entrée pour la zone naturelle." },
-        { h2: 'Barque (optionnelle)', body: "Une courte balade en barque au pied de la chute est optionnelle et payante localement. Les prix sont fixés par les opérateurs locaux et peuvent changer selon la saison ; confirmez le tarif avant d’embarquer." },
-        { h2: 'Parking', body: "De petits parkings payants se trouvent près des entrées. Fixez le prix avant de laisser la voiture ; gardez de la petite monnaie." },
-        { h2: 'Guide (optionnel)', body: "Non requis pour le sentier principal, mais un guide local est utile pour le contexte, la source de la chute ou des sentiers plus longs vers Imi Nfri." },
-        { h2: 'Repas & extras', body: "Restaurants, cafés, souvenirs et huile d’olive se paient séparément. Prévoyez un budget modeste pour un repas local et de l’eau." }
+    "fr": {
+      "kicker": "Préparer avec des informations actuelles",
+      "h1": "Ouzoud: vérifier accès et prix des services",
+      "desc": "Google Maps indiquait «gratuit» et «ouvert 24 h/24» dans la capture du 29 octobre 2026. Aucun horaire officiel actuel ni tarif uniforme d’accès n’a été vérifié. Ces mentions ne garantissent ni visite nocturne sûre, ni parking ou bateau gratuits, ni accès à tous les chemins.",
+      "intro": "Google Maps indiquait «gratuit» et «ouvert 24 h/24» dans la capture du 29 octobre 2026. Aucun horaire officiel actuel ni tarif uniforme d’accès n’a été vérifié. Ces mentions ne garantissent ni visite nocturne sûre, ni parking ou bateau gratuits, ni accès à tous les chemins.",
+      "blocks": [
+        {
+          "h2": "Ouzoud: vérifier accès et prix des services · 1",
+          "body": "Google Maps indiquait «gratuit» et «ouvert 24 h/24» dans la capture du 29 octobre 2026. Aucun horaire officiel actuel ni tarif uniforme d’accès n’a été vérifié. Ces mentions ne garantissent ni visite nocturne sûre, ni parking ou bateau gratuits, ni accès à tous les chemins."
+        },
+        {
+          "h2": "Ouzoud: vérifier accès et prix des services · 2",
+          "body": "Demandez le menu actuel et le total avant de commander, y compris boissons, service et suppléments. Aucun établissement précis ni menu du jour n’a été vérifié."
+        },
+        {
+          "h2": "Ouzoud: vérifier accès et prix des services · 3",
+          "body": "Avant de payer un guide ou un bateau, convenez du parcours, de la durée, des prestations, du matériel et de l’annulation. Aucun opérateur actuel ni tarif d’activité n’a été vérifié ici."
+        },
+        {
+          "h2": "Ouzoud: vérifier accès et prix des services · 4",
+          "body": "Choisissez un point de vue autorisé après avoir vérifié le chemin et la remontée. Demandez des précisions sur les marches, pentes, sols, barrières, sièges et aides nécessaires. Ce guide n’a pas audité un itinéraire accessible et ne garantit pas une descente complète pour tous."
+        }
       ]
     },
-    zh: {
-      kicker: '花费',
-      h1: '橄榄树瀑布门票、入园费与乘船',
-      desc: '橄榄树瀑布要门票吗？入园、乘船、停车、向导，以及你可能支付的费用——一份清晰的花费说明。',
-      intro: '好消息：自然景区本身无需门票，只需为可选服务付费。以下是预期开销。',
-      blocks: [
-        { h2: '景区入园 — 免费', body: '沿步道行走、从边缘或谷底观赏瀑布均免费。自然区域没有门票闸口或入园票。' },
-        { h2: '乘船（可选）', body: '瀑布底部的短途乘船为可选、当地付费项目。价格由当地运营方制定，可能随季节变动，登船前先确认价钱。' },
-        { h2: '停车', body: '入口附近有小型收费停车场。离车前先讲好价；备好摩洛哥小额现金。' },
-        { h2: '向导（可选）', body: '主步道非必需，但想要讲解、了解瀑布源头或前往伊米恩弗里的更长路线时，当地向导很有用。' },
-        { h2: '餐饮与额外', body: '餐厅、咖啡馆、纪念品与橄榄油需另行付费。为当地餐食与饮水预留少量预算。' }
+    "zh": {
+      "kicker": "按实际条件准备",
+      "h1": "奥祖德门票：入场与服务收费核对",
+      "desc": "2026年10月29日的Google地图快照显示“免费”和“24小时”。本站未核实当前官方每日时间表或统一入场价目。这些第三方标签不代表夜间可安全游览、停车或乘船免费，也不代表每条路径都可进入。",
+      "intro": "2026年10月29日的Google地图快照显示“免费”和“24小时”。本站未核实当前官方每日时间表或统一入场价目。这些第三方标签不代表夜间可安全游览、停车或乘船免费，也不代表每条路径都可进入。",
+      "blocks": [
+        {
+          "h2": "奥祖德门票：入场与服务收费核对 · 1",
+          "body": "2026年10月29日的Google地图快照显示“免费”和“24小时”。本站未核实当前官方每日时间表或统一入场价目。这些第三方标签不代表夜间可安全游览、停车或乘船免费，也不代表每条路径都可进入。"
+        },
+        {
+          "h2": "奥祖德门票：入场与服务收费核对 · 2",
+          "body": "点餐前索取当日菜单并确认含饮料、服务及其他附加项目的总价。本站未核实具体商家或今日菜单。"
+        },
+        {
+          "h2": "奥祖德门票：入场与服务收费核对 · 3",
+          "body": "聘导游或乘船前确认路线、时长、所含服务、装备及取消条款。本站没有核实当前活动经营者或固定价目。"
+        },
+        {
+          "h2": "奥祖德门票：入场与服务收费核对 · 4",
+          "body": "先询问当前路径及返程上坡情况，再选择获准的观景点。具体确认台阶、坡度、路面、护栏、座椅和所需协助。本站没有完成无障碍路线审计，不保证所有旅客都能走完下行路线。"
+        }
       ]
     }
   }
 };
-
-export const topicSlugs = Object.keys(topics);
+export const topicSlugs = ["marrakech-transport", "best-season", "tickets"];

@@ -3,28 +3,28 @@ import type { Locale } from '../i18n';
 // حقائق محايدة لغوياً عن الوجهة (مصدر واحد للحقيقة)
 export const site = {
   domain: 'ouzoudfalls.com',
-  ogImagePath: '/images/og-oujoud.svg',
+  ogImagePath: '/images/ouzoud-social.jpg',
 
-  latitude: 32.0152,
-  longitude: -6.71933,
-  plusCode: '277H+4VW',
-  streetAddress: '277H+4VW Cascades Ouzoud',
+  latitude: 32.014164,
+  longitude: -6.718716,
+  plusCode: '',
+  streetAddress: 'Ouzoud',
   addressLocality: 'Ouzoud',
   addressRegion: 'Azilal',
-  postalCode: '22576',
+  postalCode: '',
   countryCode: 'MA',
 
   rating: 4.6,
-  reviewCount: 20133,
+  reviewCount: 20340,
   ratingSource: { ar: 'خرائط Google', en: 'Google Maps', fr: 'Google Maps', zh: 'Google 地图' } as Record<Locale, string>,
-  ratingSync: { ar: 'سبتمبر 2026', en: 'September 2026', fr: 'septembre 2026', zh: '2026年9月' } as Record<Locale, string>,
+  ratingSync: { ar: '29 أكتوبر 2026', en: '29 October 2026', fr: '29 octobre 2026', zh: '2026年10月29日' } as Record<Locale, string>,
 
   mapsShareUrl: 'https://maps.app.goo.gl/cz7ABdpCUsSBKMXF6',
   tourismUrl: 'https://www.visitmorocco.com/',
 
   // أسماء الوجهة حسب اللغة
-  name: { ar: 'شلالات أوزود', en: 'Ouzoud Waterfalls', fr: "Cascades d'Ouzoud", zh: '橄榄树瀑布' } as Record<Locale, string>,
-  fullName: { ar: 'شلالات أوزود', en: 'Ouzoud Waterfalls', fr: "Cascades d'Ouzoud", zh: '橄榄树瀑布' } as Record<Locale, string>,
+  name: { ar: 'شلالات أوزود', en: 'Ouzoud Waterfalls', fr: "Cascades d'Ouzoud", zh: '奥祖德瀑布' } as Record<Locale, string>,
+  fullName: { ar: 'شلالات أوزود', en: 'Ouzoud Waterfalls', fr: "Cascades d'Ouzoud", zh: '奥祖德瀑布' } as Record<Locale, string>,
   shortName: { ar: 'أوزود', en: 'Ouzoud', fr: "Cascades d'Ouzoud", zh: '奥祖德瀑布' } as Record<Locale, string>,
   alternateName: ['Ouzoud Waterfalls', "Cascades d'Ouzoud", 'شلالات أوزود', '橄榄树瀑布', '奥祖德瀑布'],
 
@@ -38,10 +38,3 @@ export const site = {
 };
 
 export type SiteFacts = typeof site;
-
-// رابط تضمين خرائط Google حسب لغة الواجهة
-export function mapsEmbedSrc(locale: Locale): string {
-  const q = encodeURIComponent('277H+4VW Cascades Ouzoud, Ouzoud 22576, Morocco');
-  const hl = locale === 'ar' ? 'ar' : locale === 'fr' ? 'fr' : locale === 'zh' ? 'zh' : 'en';
-  return `https://www.google.com/maps?q=${q}&output=embed&hl=${hl}`;
-}

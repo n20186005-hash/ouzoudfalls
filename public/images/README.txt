@@ -1,3 +1,1 @@
-تستخدم الصفحة صوراً حقيقية من Wikimedia Commons عبر روابط المصدر المباشر وقت التشغيل.
-مصادر الصور وحقوقها موثقة داخل قسم "مصادر الصور" في الصفحة.
-يمكن استبدال الروابط لاحقاً بملفات JPG محلية دون تغيير تخطيط الموقع.
+Local licensed photo derivatives are committed; building requires no image download. See /IMAGE-SOURCES.txt and the visible photo record on every content page. Existing og-oujoud.svg is an unused legacy illustration, not a current photograph.

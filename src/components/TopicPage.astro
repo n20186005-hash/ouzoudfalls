@@ -1,9 +1,10 @@
 ---
 import '../styles/global.css';
+import SiteHeader from './SiteHeader.astro';
+import SiteFooter from './SiteFooter.astro';
 import { site } from '../data/site';
 import { topics, topicSlugs } from '../content/topics';
-import { guides } from '../content/guide';
-import { locales, localeMeta, pagePath, topicHreflangAlternates, type Locale } from '../i18n';
+import { localeMeta, pagePath, topicHreflangAlternates, type Locale } from '../i18n';
 
 interface Props {
   locale: Locale;
@@ -22,15 +23,15 @@ const altLinks = topicHreflangAlternates(Astro.site, slug);
 const title = `${topic.h1} | ${brand}`;
 const backLink = pagePath(locale);
 const related = topicSlugs.filter((s) => s !== slug);
-const footerText = guides[locale].footer;
 
 const articleJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'Article',
+  '@id': canonical+'#article',
   headline: topic.h1,
   description: topic.desc,
   inLanguage: meta.htmlLang,
-  mainEntityOfPage: { '@type': 'WebPage', '@id': canonical },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': canonical+'#webpage' },
   image: ogImage ? [ogImage] : undefined
 };
 ---
@@ -49,36 +50,23 @@ const articleJsonLd = {
   <meta property="og:description" content={topic.desc} />
   <meta property="og:url" content={canonical} />
   <meta property="og:image" content={ogImage} />
-  <meta property="og:image:alt" content={`${topic.h1} — ${brand}`} />
+  <meta property="og:image:alt" content="Ouzoud upper cascades, historical 2017 photograph by Kasmii; cropped" />
+  <meta name="twitter:image:alt" content="Ouzoud upper cascades, historical 2017 photograph by Kasmii; cropped" />
   <meta property="og:locale" content={meta.ogLocale} />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify({'@context':'https://schema.org','@type':'WebPage','@id':canonical+'#webpage',url:canonical,name:title,inLanguage:meta.htmlLang})} />
+  <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={title} /><meta name="twitter:description" content={topic.desc} /><meta name="twitter:image" content={ogImage} />
   <meta name="theme-color" content="#211916" />
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" />
   <link rel="icon" href="/icons/favicon-16.png" sizes="16x16" />
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180" />
-  <script type="application/ld+json" set:html={JSON.stringify(articleJsonLd)}></script>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HXM22WWPKP"></script>
-  <script is:inline>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-HXM22WWPKP');
-  </script>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(articleJsonLd)}></script>
+
 </head>
 <body>
-  <header class="fixed top-0 z-50 w-full border-b border-white/15 bg-[#211916]/70 backdrop-blur-xl">
-    <div class="mx-auto flex max-w-7xl items-center justify-between px-5 py-3">
-      <a href={backLink} aria-label="الرئيسية"><img src="/logo.svg" alt="شعار شلالات أوزود" class="h-12 w-auto" /></a>
-      <div class="flex items-center gap-1">
-        {locales.map((l) => (
-          <a href={pagePath(l) + 'guide/' + slug + '/'} class={`rounded-full border px-3 py-1 text-xs font-bold ${l === locale ? 'border-white bg-white/20 text-white' : 'border-white/30 text-white hover:bg-white/10'}`}>
-            {localeMeta[l].label}
-          </a>
-        ))}
-      </div>
-    </div>
-  </header>
+  <SiteHeader locale={locale} topic={slug} links={[{href:backLink,label:brand},...related.map(s=>({href:pagePath(locale)+'guide/'+s+'/',label:topics[s][locale].h1}))]} />
 
   <main id="top">
     <section class="relative overflow-hidden bg-[#2d241f] text-white">
@@ -117,8 +105,6 @@ const articleJsonLd = {
     </section>
   </main>
 
-  <footer class="bg-[#211916] py-10 text-center text-sm text-white/60">
-    <p>{footerText}</p>
-  </footer>
+  <SiteFooter locale={locale} />
 </body>
 </html>

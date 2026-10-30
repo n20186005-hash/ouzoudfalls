@@ -4,7 +4,7 @@ import { topicSlugs } from '../../../content/topics';
 import type { Locale } from '../../../i18n';
 
 export function getStaticPaths() {
-  return topicSlugs.map((slug) => ({ params: { slug }, props: { locale: 'en' as Locale } }));
+  return topicSlugs.map((slug) => ({ params: { slug }, props: { slug, locale: 'en' as Locale } }));
 }
 const { slug, locale } = Astro.props;
 ---

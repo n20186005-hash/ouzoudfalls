@@ -1,8 +1,13 @@
 ---
 import '../styles/global.css';
-import { site, mapsEmbedSrc } from '../data/site';
+import { site } from '../data/site';
 import { guides } from '../content/guide';
-import { locales, localeMeta, hreflangAlternates, pagePath, type Locale } from '../i18n';
+import { localeMeta, hreflangAlternates, pagePath, type Locale } from '../i18n';
+
+import SiteHeader from './SiteHeader.astro';
+import SiteFooter from './SiteFooter.astro';
+import Weather from './Weather.astro';
+import {topics,topicSlugs} from '../content/topics';
 
 interface Props {
   locale: Locale;
@@ -10,9 +15,11 @@ interface Props {
 const { locale } = Astro.props as Props;
 
 const g = guides[locale];
+const photoAlt={ar:'الشلالات العليا لأوزود في مايو 2017، تصوير Kasmii؛ منظر تاريخي مقتطع لا يثبت تدفق الماء الحالي',en:'Ouzoud upper cascades in May 2017, photographed by Kasmii; cropped historical view, not evidence of current water flow',fr:'Cascades supérieures d’Ouzoud en mai 2017, photographie de Kasmii ; vue historique recadrée, sans indication du débit actuel',zh:'Kasmii 于2017年5月拍摄的奥祖德上段瀑布；历史照片经过裁切，不代表当前水流'}[locale];
+
 const meta = localeMeta[locale];
 
-const canonical = Astro.site ? new URL(locale === 'ar' ? '/' : '/en/', Astro.site).href : undefined;
+const canonical = Astro.site ? new URL(pagePath(locale), Astro.site).href : undefined;
 const ogImage = Astro.site ? new URL(site.ogImagePath, Astro.site).href : undefined;
 
 // كيان واحد عبر اللغتين
@@ -34,29 +41,13 @@ function ph(s: string, map: Record<string, string>): string {
   return Object.entries(map).reduce((acc, [k, v]) => acc.split('{' + k + '}').join(v), s);
 }
 
-const metaTitle =
-  locale === 'ar'
-    ? 'شلالات أوزود (Ouzoud Waterfalls) | دليل الزيارة من مراكش: الطريق والموسم والتكاليف'
-    : 'Ouzoud Waterfalls (شلالات أوزود) | Visitor guide from Marrakech: route, season & costs';
-const metaDescription =
-  locale === 'ar'
-    ? 'دليل زيارة شامل لشلالات أوزود (Ouzoud Waterfalls) في المغرب: الطريق من مراكش، منبع الشلال، أفضل وقت للزيارة، التكاليف، المواقف، الطعام ونقاط المشاهدة.'
-    : 'A complete visitor guide to Ouzoud Waterfalls in Morocco: route from Marrakech, the falls’ source, best time to visit, costs, parking, food and viewpoints.';
-const ogTitle =
-  locale === 'ar'
-    ? 'شلالات أوزود (Ouzoud Waterfalls) | دليل الزيارة'
-    : 'Ouzoud Waterfalls (شلالات أوزود) | Visitor guide';
-const ogDescription =
-  locale === 'ar'
-    ? 'خطة لزيارة شلالات أوزود (Ouzoud Waterfalls) في ' + city + '، ' + province + '، ' + country + ': الطريق من مراكش، الوقت، منبع الشلال، الطعام، المواقف والتكاليف العملية.'
-    : 'Plan your visit to Ouzoud Waterfalls in ' + city + ', ' + province + ', ' + country + ': route from Marrakech, timing, the falls’ source, food, parking and practical costs.';
-
+const seo={ar:{title:'شلالات أوزود | الطريق والطقس والتحقق من الدخول',description:'أوزود بإقليم أزيلال: جهز الطريق والعودة، وافصل لقطة خرائط Google عن الوقت والرسوم الرسمية، مع توقع طقس حديث ومصادر معلنة.'},en:{title:'Ouzoud Falls | Route, Weather & Access Checks',description:'Plan Ouzoud Falls in Azilal: confirm transport and return, distinguish Maps snapshots from official hours and charges, and check a fresh regional forecast.'},fr:{title:'Cascades d’Ouzoud | Trajet, météo et accès',description:'Préparer Ouzoud à Azilal: vérifier trajet et retour, distinguer la capture Maps des horaires et tarifs officiels, consulter une prévision régionale récente.'},zh:{title:'奥祖德瀑布｜交通、天气与通行核对',description:'规划摩洛哥阿齐拉勒的奥祖德瀑布行程：确认交通及返程，区分地图日期快照与官方时间、收费，查看近期区域预报和资料来源。'}}[locale];
+const metaTitle=seo.title,metaDescription=seo.description,ogTitle=seo.title,ogDescription=seo.description;
 const aboutP1 = ph(g.about.p1, { name, short, city, province, country });
 const transportH2 = ph(g.transport.h2, { short, city });
 const nearbyP = ph(g.nearby.p, { name, lm1, lm2 });
 const nearbyH2 = ph(g.nearby.h2, { short });
 const reviewsH2 = ph(g.reviews.h2, { name });
-const weatherH2 = ph(g.weather.h2, { short });
 const aboutH2 = ph(g.about.h2, { name });
 const hierarchy = ph(g.about.hierarchy, { name, city, province, country });
 const heroRatingNote = ph(g.hero.ratingNote, { sync });
@@ -68,7 +59,7 @@ const sourcesParas = g.sources.paragraphs.map((p) =>
 
 const touristJsonLd = {
   '@context': 'https://schema.org',
-  '@type': ['TouristAttraction', 'LocalBusiness'],
+  '@type': 'TouristAttraction',
   '@id': entityId,
   name,
   alternateName: site.alternateName,
@@ -78,13 +69,10 @@ const touristJsonLd = {
       : `A complete visitor guide to ${name} in ${city}, ${province}, ${country}.`,
   url: canonical,
   image: ogImage ? [ogImage] : undefined,
-  isAccessibleForFree: true,
   address: {
     '@type': 'PostalAddress',
-    streetAddress: site.streetAddress,
     addressLocality: site.addressLocality,
     addressRegion: site.addressRegion,
-    postalCode: site.postalCode,
     addressCountry: site.countryCode
   },
   geo: {
@@ -92,26 +80,14 @@ const touristJsonLd = {
     latitude: site.latitude,
     longitude: site.longitude
   },
-  openingHoursSpecification: [
-    {
-      '@type': 'OpeningHoursSpecification',
-      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-      opens: '00:00',
-      closes: '23:59'
-    }
-  ],
-  aggregateRating: {
-    '@type': 'AggregateRating',
-    ratingValue: String(site.rating),
-    reviewCount: String(site.reviewCount)
-  },
   hasMap: site.mapsShareUrl,
-  sameAs: [site.mapsShareUrl, site.tourismUrl]
+  sameAs: [site.mapsShareUrl]
 };
 
 const faqJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
+  '@id': canonical+'#faq',
   mainEntity: g.faq.items.map(([q, a]) => ({
     '@type': 'Question',
     name: q,
@@ -119,24 +95,7 @@ const faqJsonLd = {
   }))
 };
 
-// خادم: جلب الطقس وقت البناء (Server Component) وتخزينه في HTML؛
-// يُعاد تحديثه حياً في المتصفّح عند فتح الصفحة.
-let weatherInit = '';
-try {
-  const wres = await fetch(
-    `https://api.open-meteo.com/v1/forecast?latitude=${site.latitude}&longitude=${site.longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,uv_index_max,wind_gusts_10m_max&timezone=auto&forecast_days=7`,
-    { headers: { 'User-Agent': 'ouzoudfalls-guide/1.0' } }
-  );
-  if (wres.ok) {
-    const wj = await wres.json();
-    weatherInit = JSON.stringify(wj);
-  }
-} catch (e) {
-  weatherInit = '';
-}
-
 const altLinks = hreflangAlternates(Astro.site);
-const weatherI18nJson = JSON.stringify(g.weatherI18n);
 ---
 
 <!doctype html>
@@ -153,23 +112,20 @@ const weatherI18nJson = JSON.stringify(g.weatherI18n);
   <meta property="og:description" content={ogDescription} />
   <meta property="og:url" content={canonical} />
   <meta property="og:image" content={ogImage} />
-  <meta property="og:image:alt" content={`${name} — ${city}, ${country}`} />
+  <meta property="og:image:alt" content={photoAlt} />
   <meta property="og:locale" content={meta.ogLocale} />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={metaTitle} /><meta name="twitter:description" content={metaDescription} /><meta name="twitter:image" content={ogImage} /><meta name="twitter:image:alt" content={photoAlt} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify({'@context':'https://schema.org','@type':'WebPage','@id':canonical+'#webpage',url:canonical,name:metaTitle,inLanguage:meta.htmlLang,about:{'@id':entityId}})} />
   <meta name="theme-color" content="#211916" />
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" />
   <link rel="icon" href="/icons/favicon-16.png" sizes="16x16" />
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180" />
-  <script type="application/ld+json" set:html={JSON.stringify(touristJsonLd)}></script>
-  <script type="application/ld+json" set:html={JSON.stringify(faqJsonLd)}></script>
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-HXM22WWPKP"></script>
-  <script is:inline>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-HXM22WWPKP');
-  </script>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(touristJsonLd)}></script>
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqJsonLd)}></script>
+
   <script is:inline>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -179,25 +135,11 @@ const weatherI18nJson = JSON.stringify(g.weatherI18n);
   </script>
 </head>
 <body>
-  <header class="fixed top-0 z-50 w-full border-b border-white/15 bg-[#211916]/70 backdrop-blur-xl">
-    <div class="mx-auto flex max-w-7xl items-center justify-between px-5 py-3">
-      <a href="#top" aria-label="الرئيسية"><img src="/logo.svg" alt="شعار شلالات أوزود" class="h-12 w-auto" /></a>
-      <nav class="hidden gap-6 text-sm font-bold text-white md:flex">
-        {g.nav.map((n) => <a href={n.href}>{n.label}</a>)}
-      </nav>
-      <div class="flex items-center gap-1">
-        {locales.map((l) => (
-          <a href={pagePath(l)} class={`rounded-full border px-3 py-1 text-xs font-bold ${l === locale ? 'border-white bg-white/20 text-white' : 'border-white/30 text-white hover:bg-white/10'}`}>
-            {localeMeta[l].label}
-          </a>
-        ))}
-      </div>
-    </div>
-  </header>
+  <SiteHeader locale={locale} links={g.nav} />
 
   <main id="top">
     <section class="relative min-h-[92vh] overflow-hidden bg-[#2d241f] text-white">
-      <img src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Ouzoud_Falls,_Morocco,_20250126_1133_7340.jpg?width=2200" alt={`${name} — ${city}, ${country}`} class="absolute inset-0 h-full w-full object-cover opacity-75" />
+      <img src="/images/ouzoud-falls.jpg" srcset="/images/ouzoud-falls-800.jpg 800w, /images/ouzoud-falls.jpg 1600w" sizes="100vw" width="1600" height="937" fetchpriority="high" alt={photoAlt} class="absolute inset-0 h-full w-full object-cover opacity-75" />
       <div class="absolute inset-0 bg-gradient-to-l from-[#251b17]/95 via-[#251b17]/45 to-transparent"></div>
       <div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#f3efe6] to-transparent"></div>
       <div class="relative mx-auto flex min-h-[92vh] max-w-7xl items-end px-5 pb-24 pt-32 md:items-center md:pb-12">
@@ -211,11 +153,13 @@ const weatherI18nJson = JSON.stringify(g.weatherI18n);
             <span class="rounded-full bg-white/15 px-4 py-2 backdrop-blur">{g.hero.badgeFree}</span>
           </div>
           <p class="mt-3 text-xs text-white/55" set:html={heroRatingNote.replace('↗', '')}></p>
+          <p class="mt-5 text-xs text-white/90"><a href="#image-credits" class="underline">{({ar:'Kasmii · 2017 · CC BY-SA 4.0 · المصدر والاقتطاع',en:'Kasmii · 2017 · CC BY-SA 4.0 · Source / crop',fr:'Kasmii · 2017 · CC BY-SA 4.0 · Source / recadrage',zh:'Kasmii · 2017 · CC BY-SA 4.0 · 来源与裁切'})[locale]}</a></p>
           <p class="mt-3 text-xs text-white/55"><a href={site.mapsShareUrl} target="_blank" rel="noopener noreferrer" class="underline">{g.reviews.button}</a></p>
         </div>
       </div>
     </section>
 
+    <section id="topics" class="px-5 pt-10"><div class="mx-auto grid max-w-7xl gap-4 md:grid-cols-3">{topicSlugs.map(slug=><a class="card p-6 font-bold underline" href={pagePath(locale)+'guide/'+slug+'/'}>{topics[slug][locale].h1}</a>)}</div></section>
     <section id="about" class="grain py-20 md:py-28">
       <div class="mx-auto max-w-7xl px-5">
         <div class="grid gap-8 lg:grid-cols-[1.1fr_.9fr]">
@@ -236,7 +180,7 @@ const weatherI18nJson = JSON.stringify(g.weatherI18n);
 
     <section id="visit" class="bg-[#4d5b35] py-20 text-white md:py-28">
       <div class="mx-auto grid max-w-7xl gap-8 px-5 md:grid-cols-12">
-        <div class="md:col-span-7"><img src="https://commons.wikimedia.org/wiki/Special:Redirect/file/Ouzoud_waterfalls_In_spring-Morocco.jpg?width=1800" alt={`${name} — ${city}, ${country}`} class="h-[520px] w-full rounded-[2rem] object-cover shadow-2xl" /></div>
+        <div class="md:col-span-7"><img src="/images/ouzoud-falls.jpg" srcset="/images/ouzoud-falls-800.jpg 800w, /images/ouzoud-falls.jpg 1600w" sizes="(max-width:767px) 100vw,60vw" width="1600" height="937" loading="lazy" alt={photoAlt} class="h-[520px] w-full rounded-[2rem] object-cover shadow-2xl" /></div>
         <div class="flex flex-col justify-end md:col-span-5 md:pb-8">
           <p class="kicker text-[#dfe9d5]">{g.visit.kicker}</p><h2 class="section-title mt-3" set:html={g.visit.h2}></h2><p class="mt-6 text-lg leading-9 text-white/80" set:html={g.visit.p}></p>
         </div>
@@ -252,7 +196,7 @@ const weatherI18nJson = JSON.stringify(g.weatherI18n);
           ))}
         </div>
         <div class="mt-10 overflow-hidden rounded-[2rem] border border-stone-300 bg-white shadow-xl">
-          <iframe title={g.transport.mapTitle} src={mapsEmbedSrc(locale)} width="100%" height="520" style="border:0" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          <a class="block p-8 font-bold underline" href={site.mapsShareUrl} target="_blank" rel="noopener noreferrer">{g.transport.mapTitle} ↗</a>
         </div>
         <div class="mt-12 grid gap-5 md:grid-cols-2">
           {g.transport.cards2.map((c) => (
@@ -303,18 +247,7 @@ const weatherI18nJson = JSON.stringify(g.weatherI18n);
       </div>
     </section>
 
-    <section id="weather" class="bg-[#eef3f1] py-20 md:py-28">
-      <div class="mx-auto max-w-7xl px-5">
-        <p class="kicker text-[var(--clay)]">{g.weather.kicker}</p>
-        <h2 class="section-title mt-3" set:html={weatherH2}></h2>
-        <p class="mt-4 max-w-2xl text-sm leading-7 text-stone-500" set:html={g.weather.note}></p>
-        <script type="application/json" id="weather-init" set:html={weatherInit || 'null'}></script>
-        <script type="application/json" id="weather-i18n" set:html={weatherI18nJson}></script>
-        <div id="weather-root" class="mt-10" data-lat={site.latitude} data-lon={site.longitude} data-locale={locale}>
-          <div class="card p-8 text-stone-500">{g.weatherI18n.labels.loading}</div>
-        </div>
-      </div>
-    </section>
+    <Weather locale={locale} conditions={g.weatherI18n.wmo} />
 
     <section id="history" class="bg-[#f3efe6] py-20 md:py-28">
       <div class="mx-auto max-w-7xl px-5">
@@ -427,108 +360,6 @@ const weatherI18nJson = JSON.stringify(g.weatherI18n);
     </section>
   </main>
 
-  <footer class="bg-[#211916] py-10 text-center text-sm text-white/60">
-    <p>{g.footer}</p>
-  </footer>
-
-  <script is:inline>
-  (function(){
-    var I18N_EL = document.getElementById('weather-i18n');
-    var I18N = I18N_EL && I18N_EL.textContent ? JSON.parse(I18N_EL.textContent) : null;
-    if (!I18N) return;
-    var WEATHER = I18N.wmo;
-    var L = I18N.labels;
-    function beaufort(kmh){var t=[0,1,6,12,20,29,39,50,62,75,89,103],b=0;for(var i=1;i<t.length;i++){if(kmh>=t[i])b=i;}return b;}
-    function wInfo(c){return WEATHER[c]||{t:'—',i:'🌡️'};}
-    function buildAdvice(o,A){
-      var a={outfit:[],play:[],items:[],risks:[]};
-      var isLightRain=[51,53,55,56,57,61,80].indexOf(o.code)>=0;
-      var isModRain=[63,81].indexOf(o.code)>=0;
-      var isHeavyRain=[65,82].indexOf(o.code)>=0;
-      var isThunder=[95,96,99].indexOf(o.code)>=0;
-      var isClear=[0,1].indexOf(o.code)>=0;
-      var isCloudy=[2,3].indexOf(o.code)>=0;
-      var isFog=[45,48].indexOf(o.code)>=0;
-      var rain=isLightRain||isModRain||isHeavyRain||isThunder;
-      if(o.precip>=60){a.outfit.push(A.precipHighOutfit);a.play.push(A.precipHighPlay);a.items.push(A.precipHighItems);}
-      if(isLightRain){a.outfit.push(A.lightRainOutfit);a.items.push(A.lightRainItems);}
-      if(isModRain){a.risks.push(A.modRainRisk);a.items.push(A.modRainItems);}
-      if(isHeavyRain){a.risks.push(A.heavyRainRisk);a.items.push(A.heavyRainItems);}
-      if(isThunder){a.risks.push(A.thunderRisk);}
-      if(rain){a.play.push(A.rainPlay);}
-      if(o.tmax>=32){a.outfit.push(A.hotOutfit);a.play.push(A.hotPlay);a.items.push(A.hotItems);}
-      if(o.uv>=5){a.outfit.push(A.uvOutfit);a.items.push(A.uvItems);}
-      if((o.tmax-o.tmin)>8){a.outfit.push(A.tempDiffOutfit);}
-      if(o.tmax<=10){a.outfit.push(A.coldOutfit);a.items.push(A.coldItems);}
-      if(o.bf>=5&&o.bf<=6){a.outfit.push(A.windActiveOutfit);a.play.push(A.windActivePlay);}
-      if(o.bf>=7){a.risks.push(A.windStrongRisk);}
-      if(isClear){a.outfit.push(A.clearOutfit);a.play.push(A.clearPlay);a.items.push(A.clearItems);}
-      if(isCloudy){a.outfit.push(A.cloudyOutfit);a.play.push(A.cloudyPlay);}
-      if(isFog){a.risks.push(A.fogRisk);a.items.push(A.fogItems);}
-      return a;
-    }
-    function block(title,arr){
-      if(!arr.length)return '';
-      return '<div class="rounded-2xl border border-stone-200 bg-white/80 p-5"><h4 class="font-black text-stone-900 mb-2">'+title+'</h4><ul class="space-y-2 text-sm leading-7 text-stone-700">'+arr.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>';
-    }
-    function render(root,data){
-      var cur=data.current, d=data.daily;
-      var info=wInfo(cur.weather_code);
-      var tmax=Math.round(d.temperature_2m_max[0]), tmin=Math.round(d.temperature_2m_min[0]);
-      var precip=d.precipitation_probability_max[0], uv=d.uv_index_max[0];
-      var windKmh=cur.wind_speed_10m, bf=beaufort(windKmh);
-      var adv=buildAdvice({code:cur.weather_code,tmax:tmax,tmin:tmin,precip:precip,uv:uv,bf:bf}, I18N.advice);
-      var loc=root.getAttribute('data-locale'); var bftUnit=loc==='ar'?' بفورت':' Bft';
-      var risks = adv.risks.length
-        ? '<div class="rounded-2xl border border-red-300 bg-red-50 p-5"><h4 class="font-black text-red-700 mb-2">'+L.riskTitle+'</h4><ul class="space-y-2 text-sm leading-7 text-red-800">'+adv.risks.map(function(x){return '<li>'+x+'</li>';}).join('')+'</ul></div>'
-        : '<div class="rounded-2xl border border-emerald-300 bg-emerald-50 p-4 text-sm text-emerald-800">'+L.noRisk+'</div>';
-      var wd=I18N.wday;
-      var days='';
-      for(var i=0;i<d.time.length;i++){
-        var dt=new Date(d.time[i]+'T00:00');
-        var wname=i===0?I18N.today:wd[dt.getDay()];
-        var c=wInfo(d.weather_code[i]);
-        days+='<div class="flex-1 min-w-[112px] rounded-2xl border border-white/40 bg-white/70 p-4 text-center"><div class="text-sm font-bold text-stone-500">'+wname+'</div><div class="text-3xl my-2">'+c.i+'</div><div class="text-sm text-stone-700">'+c.t+'</div><div class="mt-2 font-black text-stone-900">'+Math.round(d.temperature_2m_max[i])+'° / '+Math.round(d.temperature_2m_min[i])+'°</div><div class="text-xs text-[#2f6f8f] mt-1">💧 '+d.precipitation_probability_max[i]+'%</div></div>';
-      }
-      root.innerHTML =
-        '<div class="grid gap-6 lg:grid-cols-3">'+
-          '<div class="lg:col-span-1 card p-7">'+
-            '<div class="flex items-center gap-4"><div class="text-6xl">'+info.i+'</div><div><div class="text-4xl font-black">'+Math.round(cur.temperature_2m)+'°</div><div class="text-stone-600">'+info.t+'</div></div></div>'+
-            '<div class="mt-5 grid grid-cols-2 gap-3 text-sm">'+
-              '<div class="rounded-xl bg-black/5 p-3"><div class="text-stone-500">'+L.highLow+'</div><div class="font-black text-stone-900">'+tmax+'° / '+tmin+'°</div></div>'+
-              '<div class="rounded-xl bg-black/5 p-3"><div class="text-stone-500">'+L.precip+'</div><div class="font-black text-stone-900">'+precip+'%</div></div>'+
-              '<div class="rounded-xl bg-black/5 p-3"><div class="text-stone-500">'+L.wind+'</div><div class="font-black text-stone-900">'+Math.round(windKmh)+' km/h ('+bf+bftUnit+')</div></div>'+
-              '<div class="rounded-xl bg-black/5 p-3"><div class="text-stone-500">'+L.uv+'</div><div class="font-black text-stone-900">'+uv+'</div></div>'+
-            '</div>'+
-          '</div>'+
-          '<div class="lg:col-span-2 space-y-4">'+
-            risks+
-            '<div class="grid gap-4 sm:grid-cols-3">'+
-              block(L.outfit,adv.outfit)+
-              block(L.play,adv.play)+
-              block(L.items,adv.items)+
-            '</div>'+
-          '</div>'+
-        '</div>'+
-        '<div class="mt-8"><h3 class="mb-3 text-lg font-black text-stone-900">'+L.forecast+'</h3><div class="flex gap-3 overflow-x-auto pb-2">'+days+'</div></div>';
-    }
-    function load(){
-      var root=document.getElementById('weather-root');
-      if(!root)return;
-      var initEl=document.getElementById('weather-init');
-      var init=null;
-      try{ init=initEl&&initEl.textContent?JSON.parse(initEl.textContent):null; }catch(e){ init=null; }
-      if(init&&init.current&&init.daily){ render(root,init); }
-      var lat=root.getAttribute('data-lat'), lon=root.getAttribute('data-lon');
-      var url='https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,wind_direction_10m&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,wind_speed_10m_max,uv_index_max,wind_gusts_10m_max&timezone=auto&forecast_days=7';
-      fetch(url).then(function(r){return r.json();}).then(function(data){
-        if(data&&data.current&&data.daily){ render(root,data); }
-      }).catch(function(){
-        if(!init||!init.current){ root.innerHTML='<div class="card p-8 text-stone-600">'+L.error+'</div>'; }
-      });
-    }
-    if(document.readyState!=='loading'){load();}else{document.addEventListener('DOMContentLoaded',load);}
-  })();
-  </script>
+  <SiteFooter locale={locale} />
 </body>
 </html>

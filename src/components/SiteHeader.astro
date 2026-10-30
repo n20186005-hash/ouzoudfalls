@@ -1,0 +1,9 @@
+---
+import {locales,localeMeta,pagePath,type Locale} from '../i18n';
+interface Props {locale:Locale;links:{href:string;label:string}[];topic?:string;}
+const {locale,links,topic}=Astro.props;
+const menu={ar:'القائمة',en:'Menu',fr:'Menu',zh:'菜单'}[locale];
+const homeLabel={ar:'دليل أوزود — الصفحة الرئيسية',en:'Ouzoud guide — home',fr:'Guide d’Ouzoud — accueil',zh:'奥祖德指南 — 首页'}[locale];
+const languageLabel={ar:'اللغات',en:'Languages',fr:'Langues',zh:'语言'}[locale];
+---
+<header class="site-header"><div class="header-shell"><a href={pagePath(locale)} aria-label={homeLabel}><img src="/logo.svg" alt="" width="130" height="52" /></a><details class="header-menu"><summary>{menu} ▾</summary><nav aria-label={menu}>{links.map(n=><a href={n.href}>{n.label}</a>)}</nav></details><details class="header-menu language-menu"><summary>{localeMeta[locale].label} ▾</summary><nav aria-label={languageLabel}>{locales.map(l=><a href={pagePath(l)+(topic?'guide/'+topic+'/':'')} lang={localeMeta[l].htmlLang} aria-current={l===locale?'page':undefined}>{localeMeta[l].label}</a>)}</nav></details></div></header>

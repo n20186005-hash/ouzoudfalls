@@ -1,4 +1,5 @@
 allowBuilds:
+  workerd@1.20260916.1: true
   esbuild: true
   '@esbuild/aix-ppc64': true
   '@esbuild/android-arm': true

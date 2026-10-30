@@ -10,7 +10,7 @@ export default defineConfig({
   site: SITE || undefined,
   output: 'static',
   integrations: SITE
-    ? [sitemap({ i18n: { defaultLocale: 'ar', locales: { ar: '', en: 'en', fr: 'fr', zh: 'zh' } } })]
+    ? [sitemap({ filter: (page) => !/\/404(?:\.html|\/)?$/.test(new URL(page).pathname), i18n: { defaultLocale: 'ar', locales: { ar: 'ar', en: 'en', fr: 'fr', zh: 'zh' } } })]
     : [],
   vite: {
     plugins: [tailwindcss()]
