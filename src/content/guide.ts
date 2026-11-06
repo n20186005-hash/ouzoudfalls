@@ -116,8 +116,8 @@ export const guides: Record<Locale, Guide> = {
   "hero": {
     "kicker": "إقليم أزيلال · بني ملال خنيفرة",
     "title": [
-      "شلالات",
-      "أوزود"
+      "شلالات أوزود",
+      "أزيلال، المغرب"
     ],
     "desc": "شلالات أوزود وجهة طبيعية بإقليم أزيلال في المغرب. يحدد موقع الإقليم المكان في أوزود، جماعة آيت تكلا، بين الأطلس الكبير والمتوسط. النقطة المنشورة تحدد الموقع ولا تؤكد مدخلاً معيناً أو مساراً ميسراً.",
     "badgeHeight": "المكتب الوطني: نحو 100 م",
@@ -551,8 +551,8 @@ export const guides: Record<Locale, Guide> = {
   "hero": {
     "kicker": "Azilal Province · Béni Mellal-Khénifra",
     "title": [
-      "Ouzoud",
-      "Falls"
+      "Ouzoud Falls",
+      "Azilal, Morocco"
     ],
     "desc": "Ouzoud Falls is a natural destination in Azilal province, Morocco. The province lists it at Ouzoud, Aït Taguella, between the High and Middle Atlas. Its published map point identifies the site, not a confirmed entrance or an accessible route.",
     "badgeHeight": "ONMT: about 100 m",

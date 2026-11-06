@@ -7,15 +7,15 @@ export const site = {
 
   latitude: 32.014164,
   longitude: -6.718716,
-  plusCode: '',
+  plusCode: '277H+4VW',
   streetAddress: 'Ouzoud',
   addressLocality: 'Ouzoud',
   addressRegion: 'Azilal',
-  postalCode: '',
+  postalCode: '22576',
   countryCode: 'MA',
 
   rating: 4.6,
-  reviewCount: 20340,
+  reviewCount: 20375,
   ratingSource: { ar: 'خرائط Google', en: 'Google Maps', fr: 'Google Maps', zh: 'Google 地图' } as Record<Locale, string>,
   ratingSync: { ar: '29 أكتوبر 2026', en: '29 October 2026', fr: '29 octobre 2026', zh: '2026年10月29日' } as Record<Locale, string>,
 

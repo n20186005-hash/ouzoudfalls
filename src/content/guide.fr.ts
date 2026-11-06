@@ -37,8 +37,8 @@ export const frGuide: Guide = {
   "hero": {
     "kicker": "Province d’Azilal · Béni Mellal-Khénifra",
     "title": [
-      "Cascades",
-      "d’Ouzoud"
+      "Cascades d’Ouzoud",
+      "Azilal, Maroc"
     ],
     "desc": "Les cascades d’Ouzoud sont une destination naturelle de la province d’Azilal, au Maroc. La province situe le site à Ouzoud, Aït Taguella, entre le Haut et le Moyen Atlas. Son point cartographique ne confirme ni une entrée précise ni un parcours accessible.",
     "badgeHeight": "ONMT: environ 100 m",

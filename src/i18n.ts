@@ -38,6 +38,20 @@ export function hreflangAlternates(site: URL | undefined): { hreflang: string; h
   return out;
 }
 
+// روابط hreflang لصفحة قانونية فرعية (/privacy-policy · /terms-of-service · /cookie-settings)
+export function legalHreflangAlternates(
+  site: URL | undefined,
+  kind: string
+): { hreflang: string; href: string }[] {
+  if (!site) return [];
+  const out: { hreflang: string; href: string }[] = locales.map((l) => ({
+    hreflang: l,
+    href: new URL(pagePath(l) + kind + '/', site).href
+  }));
+  out.push({ hreflang: 'x-default', href: new URL('/en/' + kind + '/', site).href });
+  return out;
+}
+
 // روابط hreflang لصفحة موضوع فرعي ضمن /guide/{slug}
 export function topicHreflangAlternates(
   site: URL | undefined,

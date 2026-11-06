@@ -1,0 +1,192 @@
+---
+import '../styles/global.css';
+import { site } from '../data/site';
+import { guides } from '../content/guide';
+import { localeMeta, legalHreflangAlternates, pagePath, type Locale } from '../i18n';
+
+import SiteHeader from './SiteHeader.astro';
+import SiteFooter from './SiteFooter.astro';
+
+type Kind = 'privacy-policy' | 'terms-of-service' | 'cookie-settings';
+interface Props { locale: Locale; kind: Kind; }
+const { locale, kind } = Astro.props as Props;
+
+const g = guides[locale];
+const meta = localeMeta[locale];
+
+const canonical = Astro.site ? new URL(pagePath(locale) + kind + '/', Astro.site).href : undefined;
+const ogImage = Astro.site ? new URL(site.ogImagePath, Astro.site).href : undefined;
+const altLinks = legalHreflangAlternates(Astro.site, kind);
+const updated = { ar: 'آخر تحديث: أكتوبر 2026', en: 'Last updated: October 2026', fr: 'Dernière mise à jour : octobre 2026', zh: '最后更新：2026年10月' }[locale];
+
+type Sec = { h: string; p: string[] };
+
+const content = {
+  'privacy-policy': {
+    h1: { ar: 'سياسة الخصوصية', en: 'Privacy Policy', fr: 'Politique de confidentialité', zh: '隐私政策' }[locale],
+    title: { ar: 'شلالات أوزود — سياسة الخصوصية', en: 'Ouzoud Falls — Privacy Policy', fr: 'Cascades d’Ouzoud — Politique de confidentialité', zh: '奥祖德瀑布 — 隐私政策' }[locale],
+    description: {
+      ar: 'كيف يعالج هذا الدليل المستقل البيانات وملفات تعريف الارتباط والتحليلات والموارد الخارجية.',
+      en: 'How this independent guide handles data, cookies, analytics and external resources.',
+      fr: 'Comment ce guide indépendant traite les données, les cookies, les analyses et les ressources externes.',
+      zh: '本独立指南如何处理数据、Cookie、分析与外部资源。'
+    }[locale],
+    sections: [
+      { h: { ar: 'جمع المعلومات', en: 'Information collection', fr: 'Collecte d’informations', zh: '信息收集' }[locale], p: [
+        { ar: 'لا يجمع هذا الموقع معلومات تعريف شخصية بشكل نشط. أي معلومات تقدمها عبر البريد الإلكتروني أو نماذج الاتصال تبقى سرية ولا تُستخدم إلا للرد عليك.', en: 'This site does not actively collect personally identifiable information. Any details you send by email or contact form remain private and are used only to reply to you.', fr: 'Le site ne collecte pas activement d’informations personnelles identifiables. Toute information envoyée par e-mail ou formulaire reste confidentielle et sert uniquement à vous répondre.', zh: '本网站不会主动收集个人可识别信息。您通过电子邮件或联系表单提供的任何信息均严格保密，仅用于回复您。' }[locale]
+      ] },
+      { h: { ar: 'استخدام المعلومات', en: 'Information use', fr: 'Utilisation des informations', zh: '信息使用' }[locale], p: [
+        { ar: 'تُستخدم المعلومات لتقديم الخدمة وتحسينها والتواصل معك. لا نبيع معلوماتك ولا نشاركها مع أطراف ثالثة لأغراض التسويق.', en: 'Information is used to provide, maintain and improve the service and to communicate with you. We do not sell your information or share it with third parties for marketing.', fr: 'Les informations servent à fournir, maintenir et améliorer le service et à communiquer avec vous. Nous ne vendons ni ne partageons vos données à des tiers à des fins marketing.', zh: '相关信息仅用于提供、维护和改进服务以及与您沟通。我们不会出售您的信息，也不会将其分享给第三方用于营销。' }[locale]
+      ] },
+      { h: { ar: 'ملفات تعريف الارتباط والتقنيات المشابهة', en: 'Cookies and similar technologies', fr: 'Cookies et technologies similaires', zh: 'Cookie 与类似技术' }[locale], p: [
+        { ar: 'قد يستخدم الموقع ملفات تعريف الارتباط. يُحمّل Google Analytics الاختياري فقط بعد موافقتك الصريحة، ويمكنك سحب الموافقة في أي وقت.', en: 'The site may use cookies. Optional Google Analytics loads only after your explicit consent, and you can withdraw consent at any time.', fr: 'Le site peut utiliser des cookies. Google Analytics facultatif ne se charge qu’après votre consentement explicite, que vous pouvez retirer à tout moment.', zh: '网站可能使用 Cookie。可选 Google Analytics 仅在您明确同意后加载，您可以随时撤回同意。' }[locale]
+      ] },
+      { h: { ar: 'الاستضافة والقياس', en: 'Hosting and measurement', fr: 'Hébergement et mesure', zh: '托管与测量' }[locale], p: [
+        { ar: 'تستضيف Cloudflare الموقع وتعالج معلومات الاتصال والأمان. وقد تضيف إعدادات الاستضافة قياسات Cloudflare Web Analytics المستقلة عن اختيارك، ولا يوفّر هذا الموقع مفتاحاً لتعطيلها.', en: 'Cloudflare hosts the site and processes connection and security information. Hosting settings may independently add Cloudflare Web Analytics, which this page does not provide a switch to disable.', fr: 'Cloudflare héberge le site et traite les connexions et la sécurité. L’hébergement peut ajouter indépendamment Cloudflare Web Analytics, que cette page ne permet pas de désactiver.', zh: 'Cloudflare 托管本网站并处理连接与安全信息。托管设置也可能独立注入 Cloudflare Web Analytics，本站没有提供关闭该测量的开关。' }[locale]
+      ] },
+      { h: { ar: 'الموارد الخارجية', en: 'External resources', fr: 'Ressources externes', zh: '外部资源' }[locale], p: [
+        { ar: 'تُطلب بيانات الطقس من Open-Meteo لإحداثيات ثابتة قرب الموقع، لا من موقع جهازك. الصور محلية وخرائط Google رابط خارجي فقط؛ تُطبَّق سياسات مزوّد كل رابط عند فتحه.', en: 'Weather is requested from Open-Meteo for fixed site-area coordinates, not device location. Photos are local and Google Maps is an external link only; provider policies apply when you follow a link.', fr: 'La météo est demandée à Open-Meteo pour des coordonnées fixes du secteur, pas la position de votre appareil. Les photos sont locales et Google Maps est un lien externe ; les politiques du fournisseur s’appliquent.', zh: '天气由浏览器向 Open-Meteo 请求固定景点区域坐标的预报，不取得设备定位。图片由本站提供，Google 地图仅为外链，打开外链即适用对应服务商政策。' }[locale]
+      ] },
+      { h: { ar: 'أمان البيانات', en: 'Data security', fr: 'Sécurité des données', zh: '数据安全' }[locale], p: [
+        { ar: 'نسعى لحماية بياناتك بأساليب مقبولة تجارياً، لكن لا توجد طريقة نقل عبر الإنترنت مضمونة بنسبة 100%.', en: 'We strive to protect your data using commercially acceptable means, but no method of Internet transmission is 100% secure.', fr: 'Nous protégeons vos données par des moyens raisonnables, mais aucune transmission sur Internet n’est garantie à 100%.', zh: '我们尽力以业界可接受的方式保护您的数据，但任何互联网传输方式都无法保证 100% 安全。' }[locale]
+      ] },
+      { h: { ar: 'خياراتك', en: 'Your choices', fr: 'Vos choix', zh: '您的选择' }[locale], p: [
+        { ar: 'يمكنك الموافقة على Google Analytics الاختياري أو رفضه. سحب الموافقة يوقف التحميل ولا يسترجع البيانات التي سبق إرسالها. تفضيلك يُحفظ في متصفحك إن سمح التخزين.', en: 'You may allow or decline optional Google Analytics. Withdrawal stops loading and does not retract data already sent; your preference is saved in your browser if storage is allowed.', fr: 'Vous pouvez autoriser ou refuser Google Analytics facultatif. Le retrait arrête le chargement sans récupérer les données déjà envoyées ; votre choix est enregistré dans le navigateur si le stockage est autorisé.', zh: '您可以允许或拒绝可选 Google Analytics。撤回会阻止加载，且无法收回已传送的数据；浏览器允许储存时会保存您的选择。' }[locale]
+      ] },
+      { h: { ar: 'مصادر الصور', en: 'Image credits', fr: 'Crédits photos', zh: '图片来源' }[locale], p: [
+        { ar: 'صورة الغلاف: Kasmii · 20 مايو 2017 · CC BY-SA 4.0 (اقتُطع الجزء السفلي؛ صورة تاريخية لا تثبت التدفق الحالي). التفاصيل الكاملة في صفحة المصادر.', en: 'Cover photo: Kasmii · 20 May 2017 · CC BY-SA 4.0 (bottom area cropped; a historical view, not evidence of current flow). Full record on the sources page.', fr: 'Photo de couverture : Kasmii · 20 mai 2017 · CC BY-SA 4.0 (partie inférieure recadrée ; vue historique, sans preuve du débit actuel). Détails sur la page des sources.', zh: '封面照片：Kasmii · 2017年5月20日 · CC BY-SA 4.0（裁去底部；历史画面不代表今天的水量）。完整记录见来源页。' }[locale]
+      ] }
+    ]
+  },
+  'terms-of-service': {
+    h1: { ar: 'شروط الخدمة', en: 'Terms of Service', fr: 'Conditions d’utilisation', zh: '服务条款' }[locale],
+    title: { ar: 'شلالات أوزود — شروط الخدمة', en: 'Ouzoud Falls — Terms of Service', fr: 'Cascades d’Ouzoud — Conditions d’utilisation', zh: '奥祖德瀑布 — 服务条款' }[locale],
+    description: {
+      ar: 'طبيعة هذا الدليل المستقل وحدود المسؤولية والملكية الفكرية.',
+      en: 'The nature of this independent guide, plus liability limits and intellectual property.',
+      fr: 'La nature de ce guide indépendant, les limites de responsabilité et la propriété intellectuelle.',
+      zh: '本独立指南的性质、责任限制与知识产权。'
+    }[locale],
+    sections: [
+      { h: { ar: 'قبول الشروط', en: 'Acceptance of terms', fr: 'Acceptation des conditions', zh: '接受条款' }[locale], p: [
+        { ar: 'باستخدامك لهذا الموقع أو الوصول إليه فإنك توافق على الالتزام بهذه الشروط. إن كنت لا توافق على أي جزء فلا تستخدم الموقع.', en: 'By accessing or using this website you agree to be bound by these terms. If you do not agree with any part, do not use the site.', fr: 'En accédant au site ou en l’utilisant, vous acceptez d’être lié par ces conditions. Sinon, n’utilisez pas le site.', zh: '访问或使用本网站即表示您同意受本条款约束。若您不同意其中任何部分，请勿使用本站。' }[locale]
+      ] },
+      { h: { ar: 'طبيعة الخدمة', en: 'Nature of the service', fr: 'Nature du service', zh: '服务性质' }[locale], p: [
+        { ar: 'هذا الموقع مشروع مستقل غير ربحي لتقديم معلومات سياحية وتثقيفية. وليس جهة إدارة الشلالات، ولا موقعاً حكومياً رسمياً، ولا خدمة حجز.', en: 'This is an independent, non-profit travel and educational information guide. It is not the falls’ managing authority, an official government site, or a booking service.', fr: 'Il s’agit d’un guide d’information touristique et pédagogique indépendant à but non lucratif. Ce n’est ni l’autorité gérant les cascades, ni un site officiel, ni un service de réservation.', zh: '本站是独立的非营利旅游与科普信息指南，并非瀑布管理方、政府官方网站或预订服务。' }[locale]
+      ] },
+      { h: { ar: 'دقة المحتوى', en: 'Content accuracy', fr: 'Exactitude du contenu', zh: '内容准确性' }[locale], p: [
+        { ar: 'المعلومات تُقدَّم للإرشاد العام فقط ولا تُعد بديلاً من التحقق الميداني. لا نضمن اكتمال دقتها، ويتغيّر الواقع (المسارات والرسوم وساعات الفتح) باستمرار.', en: 'Information is provided for general reference only and is not a substitute for on-site verification. We do not guarantee complete accuracy; on-the-ground reality (trails, fees, opening hours) changes.', fr: 'Les informations sont fournies à titre indicatif et ne remplacent pas la vérification sur place. Nous ne garantissons pas leur exactitude complète ; la réalité terrain évolue.', zh: '本网站信息仅供一般参考，不能替代现场核实。我们不保证其完全准确；实地情况（路线、收费、开放时间）会持续变化。' }[locale]
+      ] },
+      { h: { ar: 'الملكية الفكرية', en: 'Intellectual property', fr: 'Propriété intellectuelle', zh: '知识产权' }[locale], p: [
+        { ar: 'جميع النصوص والصور والشعارات ملك للقائمين على الموقع، ما لم يُذكر غير ذلك. يُمنع أي استخدام أو نسخ أو توزيع غير مصرّح به.', en: 'All text, images and logos are the property of the site operators except where noted. Unauthorized use, copying or distribution is prohibited.', fr: 'Tous les textes, images et logos appartiennent aux opérateurs du site sauf mention contraire. Toute utilisation non autorisée est interdite.', zh: '除非另有说明，本网站所有文字、图片与标识归运营方所有；未经授权不得使用、复制或分发。' }[locale]
+      ] },
+      { h: { ar: 'حدود المسؤولية', en: 'Limitation of liability', fr: 'Limitation de responsabilité', zh: '责任限制' }[locale], p: [
+        { ar: 'لا نتحمل أي مسؤولية عن أي أضرار مباشرة أو غير مباشرة أو تبعية ناتجة عن استخدام الموقع أو المعلومات الواردة فيه.', en: 'We are not liable for any direct, indirect or consequential damages arising from the use of this site or the information it contains.', fr: 'Nous déclinons toute responsabilité pour tout dommage direct, indirect ou consécutif découlant de l’utilisation du site ou de ses informations.', zh: '对于因使用本网站或其信息而导致的任何直接、间接或后果性损害，本站概不负责。' }[locale]
+      ] }
+    ]
+  },
+  'cookie-settings': {
+    h1: { ar: 'إعدادات ملفات الارتباط', en: 'Cookie Settings', fr: 'Paramètres des cookies', zh: 'Cookie 设置' }[locale],
+    title: { ar: 'شلالات أوزود — إعدادات ملفات الارتباط', en: 'Ouzoud Falls — Cookie Settings', fr: 'Cascades d’Ouzoud — Paramètres des cookies', zh: '奥祖德瀑布 — Cookie 设置' }[locale],
+    description: {
+      ar: 'إدارة تفضيلات ملفات تعريف الارتباط والاختيار التحليلي.',
+      en: 'Manage your cookie preferences and analytics choice.',
+      fr: 'Gérez vos préférences de cookies et le choix analytique.',
+      zh: '管理您的 Cookie 偏好与分析选择。'
+    }[locale],
+    intro: { ar: 'أدِر تفضيلات ملفات تعريف الارتباط الخاصة بك.', en: 'Manage your cookie preferences.', fr: 'Gérez vos préférences de cookies.', zh: '管理您的 Cookie 偏好设置。' }[locale],
+    categories: [
+      { h: { ar: 'ملفات ضرورية', en: 'Necessary cookies', fr: 'Cookies nécessaires', zh: '必要的 Cookie' }[locale], p: { ar: 'مفعّلة دائماً — مطلوبة للوظائف الأساسية للموقع.', en: 'Always enabled — required for the site’s basic functions.', fr: 'Toujours activés — nécessaires aux fonctions de base du site.', zh: '始终启用 — 网站基本功能所需。' }[locale], status: { ar: 'مفعّلة', en: 'Always on', fr: 'Toujours activés', zh: '始终启用' }[locale] },
+      { h: { ar: 'ملفات تحليلية', en: 'Analytics cookies', fr: 'Cookies analytiques', zh: '分析 Cookie' }[locale], p: { ar: 'تساعدنا على فهم كيفية تفاعل الزوار مع الموقع، وتستخدم Google Analytics اختيارياً بعد موافقتك.', en: 'Help us understand how visitors interact with the site, via optional Google Analytics after your consent.', fr: 'Nous aident à comprendre comment les visiteurs utilisent le site, via Google Analytics facultatif après consentement.', zh: '帮助我们了解访客如何与网站互动，对应可选 Google Analytics，需经您同意。' }[locale], status: { ar: 'اختيارية', en: 'Optional', fr: 'Facultatif', zh: '可选' }[locale] },
+      { h: { ar: 'ملفات تسويقية', en: 'Marketing cookies', fr: 'Cookies marketing', zh: '营销 Cookie' }[locale], p: { ar: 'تُستخدم للتتبع عبر المواقع. هذا الموقع لا يستخدم ملفات تسويقية.', en: 'Used for cross-site tracking. This site does not use marketing cookies.', fr: 'Utilisés pour le suivi intersites. Ce site n’utilise pas de cookies marketing.', zh: '用于跨网站追踪访客。本站不使用营销 Cookie。' }[locale], status: { ar: 'غير مستخدمة', en: 'Not used', fr: 'Non utilisés', zh: '未使用' }[locale] }
+    ]
+  }
+} as Record<string, any>;
+
+const page = content[kind];
+const photoAlt = { ar: 'شلالات أوزود', en: 'Ouzoud Falls', fr: 'Cascades d’Ouzoud', zh: '奥祖德瀑布' }[locale];
+---
+
+<!doctype html>
+<html lang={meta.htmlLang} dir={meta.dir}>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{page.title}</title>
+  <meta name="description" content={page.description} />
+  <link rel="canonical" href={canonical} />
+  {altLinks.map((a) => <link rel="alternate" hreflang={a.hreflang} href={a.href} />)}
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content={page.title} />
+  <meta property="og:description" content={page.description} />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:alt" content={photoAlt} />
+  <meta property="og:locale" content={meta.ogLocale} />
+  <meta name="robots" content="index,follow,max-image-preview:large" />
+  <meta name="twitter:card" content="summary_large_image" /><meta name="twitter:title" content={page.title} /><meta name="twitter:description" content={page.description} /><meta name="twitter:image" content={ogImage} /><meta name="twitter:image:alt" content={photoAlt} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify({'@context':'https://schema.org','@type':'WebPage','@id':canonical+'#webpage',url:canonical,name:page.title,inLanguage:meta.htmlLang})} />
+  <meta name="theme-color" content="#211916" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" />
+  <link rel="icon" href="/icons/favicon-16.png" sizes="16x16" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" sizes="180x180" />
+  <script is:inline>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
+    }
+  </script>
+</head>
+<body>
+  <SiteHeader locale={locale} links={g.nav} />
+
+  <main id="top" class="bg-[#f3efe6] text-stone-800">
+    <div class="mx-auto max-w-3xl px-5 py-16 md:py-24">
+      <p class="text-sm font-bold text-stone-500"><a class="underline" href={pagePath(locale)}>{ { ar: 'العودة إلى الرئيسية', en: 'Back to home', fr: 'Retour à l’accueil', zh: '返回首页' }[locale] }</a></p>
+      <h1 class="mt-4 text-4xl font-black text-stone-900 md:text-5xl">{page.h1}</h1>
+      <p class="mt-3 text-sm text-stone-500">{updated}</p>
+
+      {kind === 'cookie-settings' && (
+        <>
+          <p class="mt-6 text-lg leading-8 text-stone-700">{page.intro}</p>
+          <div class="mt-10 space-y-5">
+            {page.categories.map((c) => (
+              <div class="rounded-2xl border border-stone-300 bg-white p-6">
+                <div class="flex items-center justify-between gap-3">
+                  <h2 class="text-xl font-black text-stone-900">{c.h}</h2>
+                  <span class="rounded-full bg-stone-100 px-3 py-1 text-xs font-bold text-stone-600">{c.status}</span>
+                </div>
+                <p class="mt-2 leading-8 text-stone-600">{c.p}</p>
+              </div>
+            ))}
+          </div>
+          <div class="mt-10 rounded-2xl border border-stone-300 bg-white p-6">
+            <h2 class="text-xl font-black text-stone-900">{ { ar: 'اختيارك التحليلي', en: 'Your analytics choice', fr: 'Votre choix analytique', zh: '您的分析选择' }[locale] }</h2>
+            <p class="mt-2 leading-8 text-stone-600">{ { ar: 'اختر أدناه للموافقة على Google Analytics الاختياري أو رفضه. يُحفظ الاختيار فوراً في متصفحك.', en: 'Choose below to allow or decline optional Google Analytics. Your choice is saved immediately in your browser.', fr: 'Choisissez ci-dessous pour autoriser ou refuser Google Analytics facultatif. Votre choix est enregistré immédiatement.', zh: '在下方选择允许或拒绝可选 Google Analytics，选择会立即保存在您的浏览器中。' }[locale] }</p>
+            <div class="mt-4 flex flex-wrap gap-3">
+              <button class="min-h-11 rounded-xl bg-[#241d19] px-5 py-3 font-bold text-white" data-consent="granted">{ { ar: 'السماح', en: 'Allow', fr: 'Autoriser', zh: '允许' }[locale] }</button>
+              <button class="min-h-11 rounded-xl border border-stone-400 px-5 py-3 font-bold text-stone-800" data-consent="denied">{ { ar: 'الرفض', en: 'Decline', fr: 'Refuser', zh: '拒绝' }[locale] }</button>
+            </div>
+          </div>
+        </>
+      )}
+
+      {kind !== 'cookie-settings' && (
+        <div class="mt-8 space-y-8">
+          {page.sections.map((s) => (
+            <section>
+              <h2 class="text-2xl font-black text-stone-900">{s.h}</h2>
+              {s.p.map((t) => <p class="mt-3 leading-8 text-stone-700">{t}</p>)}
+            </section>
+          ))}
+        </div>
+      )}
+    </div>
+  </main>
+
+  <SiteFooter locale={locale} />
+</body>
+</html>
